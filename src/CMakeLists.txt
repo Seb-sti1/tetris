@@ -1,8 +1,3 @@
-cmake_minimum_required(VERSION 3.23)
+add_executable(tetris main.cpp HelloWorld.h HelloWorld.cpp)
 
-set(CMAKE_CXX_STANDARD 14)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread" )
-
-
-add_executable(tetris main.cpp)
+#link_libraries(tetris ${GTKMM_LIBRARIES})
