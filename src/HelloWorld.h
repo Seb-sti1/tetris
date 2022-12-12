@@ -22,6 +22,8 @@ protected:
 
     //Member widgets:
     Gtk::Button m_button;
+
+    bool onKeyPress(GdkEventKey *event);
 };
 
 

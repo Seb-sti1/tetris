@@ -8,8 +8,8 @@
 ## Installation
 
 Install of GTK :
-`sudo apt install libgtkmm-3.0-dev`
-
+- `sudo apt install libgtkmm-3.0-dev`
+- `sudo apt-get install libncurses5-dev libncursesw5-dev`
 
 
 

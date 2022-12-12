@@ -16,6 +16,7 @@ HelloWorld::HelloWorld()
     m_button.signal_clicked().connect(sigc::mem_fun(*this,
                                                     &HelloWorld::on_button_clicked));
 
+    this->signal_key_press_event().connect( sigc::mem_fun( *this, &HelloWorld::onKeyPress ), false );
     // This packs the button into the Window (a container).
     add(m_button);
 
@@ -30,4 +31,15 @@ HelloWorld::~HelloWorld()
 void HelloWorld::on_button_clicked()
 {
     std::cout << "Hello World" << std::endl;
+}
+
+bool HelloWorld::onKeyPress(GdkEventKey* event)
+{
+    std::cout << event->keyval << ' ' << event->hardware_keycode << ' ' << event->state << std::endl;
+    // UP 65362
+    // DOWN 65364
+    // RIGHT 65363
+    // LEFT 65361
+    // Esc 65307
+    return false;
 }
