@@ -1,4 +1,4 @@
-#pragma once "game.h"
+#pragma once
 #include <time.h>
 #include <vector.h>
 #include <tetromino.h>
