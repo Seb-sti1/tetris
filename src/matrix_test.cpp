@@ -34,5 +34,7 @@ int main(){
 
     Matrix MatB = Mat;
 
+    MatB.Print();
+
 
 }

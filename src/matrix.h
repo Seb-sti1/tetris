@@ -12,19 +12,21 @@ class Matrix {
 
     unsigned int rows;
     unsigned int cols;
-    std::unique_ptr<tetromino_type[]> data;
 
-    Matrix(const int rows_init, const int cols_init): rows{(unsigned int)rows_init}, cols{(unsigned int)cols_init}, data{std::make_unique<tetromino_type[]>(rows_init*cols_init)} {}
+    Matrix(const unsigned int rows_init, const unsigned int cols_init) :
+        rows(rows_init),
+        cols(cols_init),
+        data(std::make_unique<tetromino_type[]>(rows_init*cols_init)) {}
 
     // Copy constructor
     Matrix(const Matrix &SrcMatrix)
     {
-      printf("copy");
+      printf("copy\n");
       rows = SrcMatrix.rows;
       cols = SrcMatrix.cols;
-      std::unique_ptr<tetromino_type[]> data;
+      data = std::make_unique<tetromino_type[]>(rows * cols);
       std::copy_n(SrcMatrix.data.get(), SrcMatrix.rows*SrcMatrix.cols, data.get());
-      printf("ended");
+      printf("ended\n");
 
     };
 
@@ -61,4 +63,8 @@ class Matrix {
     int GetNumColumns() const {
       return this->cols;
     }
+
+private:
+    std::unique_ptr<tetromino_type[]> data;
+
 };
