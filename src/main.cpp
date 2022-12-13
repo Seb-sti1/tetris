@@ -3,22 +3,20 @@
 //
 
 #include <gtkmm/application.h>
-#include "clock.h"
+#include "graphicmatrix.h"
 #include "MainWindow.h"
 
 int main (int argc, char *argv[])
 {
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
 
+    Matrix m(20, 10);
+
     MainWindow w;
 
-    Clock c;
+    GraphicMatrix c(&m);
     w.add(c);
     c.show();
-
-    //HelloWorld helloworld;
-
-    //helloworld.drawRectangle(10,10, 50, 50);
 
     /*std::mt19937 gen(26565332123465); //Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<> distrib(1, 6);

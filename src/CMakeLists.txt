@@ -1,3 +1,3 @@
-add_executable(tetris main.cpp clock.h clock.cpp MainWindow.h MainWindow.cpp)
+add_executable(tetris main.cpp graphicmatrix.h graphicmatrix.cpp MainWindow.h MainWindow.cpp matrix.h)
 
 #link_libraries(tetris ${GTKMM_LIBRARIES})
