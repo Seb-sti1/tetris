@@ -1,6 +1,6 @@
 # tetris
 
-
+This is a beautiful tetris that you'll be able to play in multiplayer.
 
 
 # Development
@@ -9,9 +9,6 @@
 
 Install of GTK :
 - `sudo apt install libgtkmm-3.0-dev`
-- `sudo apt-get install libncurses5-dev libncursesw5-dev`
-
-
 
 
 # Useful links
