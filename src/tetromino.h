@@ -1,4 +1,4 @@
-#pragma once "tetromino.h"
+#pragma once
 
 enum tetromino_type {I, O, T, L, J , Z, S};
 enum orient {UP, RIGHT, DOWN, LEFT};
@@ -14,10 +14,4 @@ class Tetromino {
         unsigned int y;
         orient orientation;
 
-    protected:
-
-        void RotateTetromino()
-
-    
-
-}
+};

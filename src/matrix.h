@@ -1,8 +1,10 @@
-#pragma once "matrix.h"
+#pragma once
 #include <iostream>
+#include <stdlib.h>
 #include <vector>
 #include <memory>
 #include "tetromino.h"
+#include <algorithm>
 
 class Matrix {
 
@@ -12,17 +14,33 @@ class Matrix {
     unsigned int cols;
     std::unique_ptr<tetromino_type[]> data;
 
-    Matrix(const int rows_init, const int cols_init): rows{rows_init}, cols{cols_init}, data{std::make_unique<tetromino_type[]>(rows*cols)} {}
+    Matrix(const int rows_init, const int cols_init): rows{(unsigned int)rows_init}, cols{(unsigned int)cols_init}, data{std::make_unique<tetromino_type[]>(rows_init*cols_init)} {}
+
+    // Copy constructor
+    Matrix(const Matrix &SrcMatrix)
+    {
+      printf("copy");
+      rows = SrcMatrix.rows;
+      cols = SrcMatrix.cols;
+      std::unique_ptr<tetromino_type[]> data;
+      std::copy_n(SrcMatrix.data.get(), SrcMatrix.rows*SrcMatrix.cols, data.get());
+      printf("ended");
+
+    };
+
+    // TO DO : add move constructor
 
     ~Matrix() {}
 
     void Print() {
-      for (int i=1; i<this->rows; i++)
+      for (unsigned int i=0; i<this->rows; i++)
       {
-        for (int j=0; j<this->cols; j++)
+        for (unsigned int j=0; j<this->cols; j++)
         {
-          std::cout << this->data[i*(this->cols)+j] << std::endl;
+          std::cout << this->data[i*(this->cols)+j] << " ";
+          
         }
+        std::cout << std::endl;
       }
     }
 
