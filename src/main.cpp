@@ -8,15 +8,15 @@
 
 int main (int argc, char *argv[])
 {
-    auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
+    auto app = Gtk::Application::create(argc, argv, "org.tetris");
 
     Matrix m(20, 10);
 
     MainWindow w;
 
-    GraphicMatrix c(&m);
+    /*GraphicMatrix c(&m);
     w.add(c);
-    c.show();
+    c.show();*/
 
     /*std::mt19937 gen(26565332123465); //Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<> distrib(1, 6);
