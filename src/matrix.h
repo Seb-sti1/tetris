@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <vector>
 #include <memory>
 #include "tetromino.h"
@@ -50,7 +50,7 @@ class Matrix {
       std::cout << this->data[row*(this->cols)+col] << std::endl;
     }
 
-    int At(const int row, const int col) const {
+    tetromino_type At(const int row, const int col) const {
       return this->data[row*(this->cols)+col];
     }
 
