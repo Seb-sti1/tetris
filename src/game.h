@@ -2,6 +2,7 @@
 #include <time.h>
 #include <vector.h>
 #include <tetromino.h>
+#include <matrix.h>
 
 class Game {
 

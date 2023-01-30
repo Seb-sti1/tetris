@@ -34,7 +34,8 @@ int main(){
 
     Matrix MatB = Mat;
 
-    MatB.Print();
+    std::cout << MatB.At(2,2) << std::endl;
 
+    MatB.Print();
 
 }

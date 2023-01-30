@@ -6,6 +6,7 @@
 #include "tetromino.h"
 #include <algorithm>
 
+// Matrix of tetromino_type, maybe do a template out of it
 class Matrix {
 
   public:
@@ -21,13 +22,10 @@ class Matrix {
     // Copy constructor
     Matrix(const Matrix &SrcMatrix)
     {
-      printf("copy\n");
       rows = SrcMatrix.rows;
       cols = SrcMatrix.cols;
       data = std::make_unique<tetromino_type[]>(rows * cols);
       std::copy_n(SrcMatrix.data.get(), SrcMatrix.rows*SrcMatrix.cols, data.get());
-      printf("ended\n");
-
     };
 
     // TO DO : add move constructor
@@ -50,21 +48,24 @@ class Matrix {
       std::cout << this->data[row*(this->cols)+col] << std::endl;
     }
 
-    int At(const int row, const int col) const {
+    tetromino_type At(const int row, const int col) const {
       return this->data[row*(this->cols)+col];
     }
 
-    //TO DO : add int& At
+    tetromino_type* At_ptr(const int row, const int col) {
+      return &(this->data[row*(this->cols)+col]);
+    }
 
-    int GetNumRows() const {
+    unsigned int GetNumRows() const {
       return this->rows;
     }
 
-    int GetNumColumns() const {
+    unsigned int GetNumColumns() const {
       return this->cols;
     }
 
-private:
+protected:
+
     std::unique_ptr<tetromino_type[]> data;
 
 };
