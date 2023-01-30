@@ -7,6 +7,7 @@
 #include <algorithm>
 
 // Matrix of tetromino_type, maybe do a template out of it
+template <class T>
 class Matrix {
 
   public:
@@ -17,14 +18,14 @@ class Matrix {
     Matrix(const unsigned int rows_init, const unsigned int cols_init) :
         rows(rows_init),
         cols(cols_init),
-        data(std::make_unique<tetromino_type[]>(rows_init*cols_init)) {}
+        data(std::make_unique<T[]>(rows_init*cols_init)) {}
 
     // Copy constructor
     Matrix(const Matrix &SrcMatrix)
     {
       rows = SrcMatrix.rows;
       cols = SrcMatrix.cols;
-      data = std::make_unique<tetromino_type[]>(rows * cols);
+      data = std::make_unique<T[]>(rows * cols);
       std::copy_n(SrcMatrix.data.get(), SrcMatrix.rows*SrcMatrix.cols, data.get());
     };
 
@@ -48,24 +49,28 @@ class Matrix {
       std::cout << this->data[row*(this->cols)+col] << std::endl;
     }
 
-    tetromino_type At(const int row, const int col) const {
+    T At(const int row, const int col) const {
       return this->data[row*(this->cols)+col];
     }
 
-    tetromino_type* At_ptr(const int row, const int col) {
+    T* At_ptr(const int row, const int col) {
       return &(this->data[row*(this->cols)+col]);
     }
 
+    void To(const int row, const int col, const T value) {
+      data[row * cols + col] = value;
+    }
+
     unsigned int GetNumRows() const {
-      return this->rows;
+      return rows;
     }
 
     unsigned int GetNumColumns() const {
-      return this->cols;
+      return cols;
     }
 
 protected:
 
-    std::unique_ptr<tetromino_type[]> data;
+    std::unique_ptr<T[]> data;
 
 };
