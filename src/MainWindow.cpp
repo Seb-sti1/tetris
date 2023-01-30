@@ -4,53 +4,68 @@
 
 #include "MainWindow.h"
 #include <iostream>
+#include <random>
+#include "matrix.h"
 
-MainWindow::MainWindow() : container(Gtk::ORIENTATION_VERTICAL)
+MainWindow::MainWindow(std::uniform_int_distribution<> distrib) :
+    homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
+    game(distrib)
 {
     set_default_size(500, 500);
     set_border_width(10);
 
-    add(container);
+    add(homeButtonsContainer);
 
-    container.set_margin_top(50);
+    homeButtonsContainer.set_margin_top(50);
 
     b_start.set_label("Commencer une partie");
-    b_start.signal_button_release_event().connect([&](GdkEventButton*) {
-        std::cout << "Start game" << std::endl;
-        return true;
-    });
-    container.add(b_start);
+
+    b_start.signal_clicked().connect(
+            sigc::mem_fun(*this, &MainWindow::StartGame));
+    homeButtonsContainer.add(b_start);
 
     b_join_multi.set_label("Rejoindre une partie multijoueur");
     b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Join multiplayer game" << std::endl;
         return true;
     });
-    container.add(b_join_multi);
+    homeButtonsContainer.add(b_join_multi);
 
     b_create_multi.set_label("Créer une partie multijoueur");
     b_create_multi.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Start multiplayer game" << std::endl;
         return true;
     });
-    container.add(b_create_multi);
+    homeButtonsContainer.add(b_create_multi);
 
     b_help.set_label("Aide");
     b_help.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Help" << std::endl;
         return true;
     });
-    container.add(b_help);
+    homeButtonsContainer.add(b_help);
 
     l_undertext.set_label("Tetris by Billy & Sébastien.");
-    container.add(l_undertext);
+    homeButtonsContainer.add(l_undertext);
 
-    set_title("Tetriste");
+    set_title("Tetris");
 
     this->signal_key_press_event().connect( sigc::mem_fun( *this, &MainWindow::onKeyPress ), false );
 
-    show_all();
+    show_all_children();
 }
+
+void MainWindow::StartGame()
+{
+    std::cout << "Start game" << std::endl;
+    remove();
+
+    GraphicMatrix graphicMatrix(game.matrix);
+    playingGrid.attach(graphicMatrix, 0, 0);
+    add(playingGrid);
+
+    show_all_children();
+};
 
 
 

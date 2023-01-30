@@ -13,20 +13,26 @@
 #include <gtkmm/button.h>
 #include <gtkmm/label.h>
 #include <gtkmm/frame.h>
-
+#include <gtkmm/grid.h>
+#include "game.h"
+#include "graphicmatrix.h"
 
 class MainWindow : public Gtk::Window {
 
 public:
-    MainWindow();
+    MainWindow(std::uniform_int_distribution<> distrib);
     ~MainWindow();
+    void StartGame();
 
 private:
     Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
     Gtk::Label l_undertext;
 
-    Gtk::ButtonBox container;
+    Game game;
 
+    Gtk::ButtonBox homeButtonsContainer;
+
+    Gtk::Grid playingGrid;
 
 protected:
     bool onKeyPress(GdkEventKey *event);

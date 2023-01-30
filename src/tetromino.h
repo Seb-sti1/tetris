@@ -2,13 +2,14 @@
 
 #include "matrix.h"
 
-enum tetromino_type {I, O, T, L, J, Z, S};
+#define tetromino_rows 4;
+#define tetromino_cols 3;
+
+enum tetromino_type {I, O, T, L, J, Z, S, NONE};
 enum orient {UP, RIGHT, DOWN, LEFT};
 
-int tetromino_rows = 4;
-int tetromino_cols = 3;
 
-Matrix<bool> I_matrix(tetromino_rows, tetromino_cols);
+/*Matrix<bool> I_matrix(tetromino_rows, tetromino_cols);
 for(int i=0; i<tetromino_rows; i++) I_matrix.To(i,1,true);
 
 Matrix<bool> O_matrix(tetromino_rows, tetromino_cols);
@@ -46,7 +47,7 @@ S_matrix.To(0,1,true);
 S_matrix.To(0,2,true);
 S_matrix.To(1,0,true);
 S_matrix.To(1,1,true);
-
+*/
 class Tetromino {
 
     public:
@@ -58,7 +59,7 @@ class Tetromino {
 
         bool verify_move_validity(std::vector<std::vector<int>> matrix, orient orientation)
         {
-
+            return false;
         }
 
 };

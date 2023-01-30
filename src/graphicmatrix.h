@@ -12,7 +12,7 @@
 class GraphicMatrix : public Gtk::DrawingArea
 {
 public:
-    GraphicMatrix(Matrix* matrix);
+    explicit GraphicMatrix(Matrix<tetromino_type>& matrix);
     virtual ~GraphicMatrix();
 
 protected:
@@ -20,7 +20,7 @@ protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
 
 private:
-    Matrix* matrix;
+    Matrix<tetromino_type>& matrix; // use a reference to prevent data duplication
 };
 
 
