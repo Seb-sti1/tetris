@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <vector>
 #include <memory>
 #include "tetromino.h"
