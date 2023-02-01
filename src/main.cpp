@@ -5,19 +5,16 @@
 #include <gtkmm/application.h>
 #include "MainWindow.h"
 
+
+
+
 int main (int argc, char *argv[])
 {
     auto app = Gtk::Application::create(argc, argv, "org.tetris");
 
-    // create game
-    std::mt19937 gen(std::time(nullptr) * 256812 % 486645136845); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> distrib(1, 6);
+    Game g;
+    MainWindow w(g);
 
-    MainWindow w(distrib);
-
-    /*GraphicMatrix c(&m);
-    w.add(c);
-    c.show();*/
 
     /*
     for (int n=0; n<100; ++n)

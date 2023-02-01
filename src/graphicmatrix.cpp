@@ -11,10 +11,11 @@
 GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix) {
     set_margin_top(15);
     set_size_request(250, 500);
-
 }
 
-GraphicMatrix::~GraphicMatrix() {}
+GraphicMatrix::~GraphicMatrix() {
+    std::cout << "Bye Bye" << std::endl;
+}
 
 /**
  * The callback function to draw the matrix
@@ -32,7 +33,7 @@ bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     for (int i = 0; i < matrix.GetNumRows(); i++) {
         for (int j = 0; j < matrix.GetNumColumns(); j++) {
             Gdk::Color c = tetrominoTypeToColor(matrix.At(i, j));
-            cr->set_source_rgba(c.get_red(), c.get_green(), c.get_blue(), 1.0);   // green
+            cr->set_source_rgba(c.get_red_p(), c.get_green_p(), c.get_blue_p(), 1.0);   // green
             cr->rectangle(0, 0, w, h);
             cr->fill_preserve();
 
@@ -47,31 +48,31 @@ bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
 
 Gdk::Color tetrominoTypeToColor(tetromino_type t) {
-    Gdk::Color c; // TODO static_cast<gushort> from short seems not to work
+    Gdk::Color c;
     switch (t) {
         case I:
-            c.set_rgb(0.0, 1.0, 1.0);
+            c.set_rgb_p(0.0, 1.0, 1.0);
             break;
         case O:
-            c.set_rgb(1.0, 1.0, 0.0);
+            c.set_rgb_p(1.0, 1.0, 0.0);
             break;
         case T:
-            c.set_rgb(1.0, 1.0, static_cast<gushort>(0.4));
+            c.set_rgb_p(1.0, 1.0, 0.4);
             break;
         case L:
-            c.set_rgb(1.0, static_cast<gushort>(0.4), 1.0);
+            c.set_rgb_p(1.0, 0.4, 1.0);
             break;
         case J:
-            c.set_rgb(static_cast<gushort>(0.4), static_cast<gushort>(0.4), 1.0);
+            c.set_rgb_p(0.4, 0.4, 1.0);
             break;
         case Z:
-            c.set_rgb(1.0, static_cast<gushort>(0.4), static_cast<gushort>(0.4));
+            c.set_rgb_p(1.0, 0.4, 0.4);
             break;
         case S:
-            c.set_rgb(static_cast<gushort>(0.4), 1.0, static_cast<gushort>(0.4));
+            c.set_rgb_p(0.4, 1.0, 0.4);
             break;
         case NONE:
-            c.set_rgb(static_cast<gushort>(0.5), static_cast<gushort>(0.5), static_cast<gushort>(0.5));
+            c.set_rgb_p(0.3, 0.3, 0.3);
             break;
     }
 
