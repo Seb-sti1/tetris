@@ -17,26 +17,33 @@
 #include "game.h"
 #include "graphicmatrix.h"
 
+enum Page {HOME, GAME};
+
 class MainWindow : public Gtk::Window {
 
 public:
-    MainWindow(std::uniform_int_distribution<> distrib);
+    explicit MainWindow(Game& g);
     ~MainWindow();
     void StartGame();
 
 private:
-    Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
+    Gtk::Button b_start, b_join_multi, b_create_multi, b_help, b_quit;
     Gtk::Label l_undertext;
 
-    Game game;
+    Game& game;
 
     Gtk::ButtonBox homeButtonsContainer;
     GraphicMatrix graphicMatrix;
 
     Gtk::Grid playingGrid;
 
+    Page state;
+
 protected:
     bool onKeyPress(GdkEventKey *event);
+    void ChangeToPage(Page p);
+
+
 
 };
 

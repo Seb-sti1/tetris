@@ -11,10 +11,11 @@
 GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix) {
     set_margin_top(15);
     set_size_request(250, 500);
-
 }
 
-GraphicMatrix::~GraphicMatrix() {}
+GraphicMatrix::~GraphicMatrix() {
+    std::cout << "Bye Bye" << std::endl;
+}
 
 /**
  * The callback function to draw the matrix

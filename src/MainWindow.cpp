@@ -4,19 +4,15 @@
 
 #include "MainWindow.h"
 #include <iostream>
-#include <random>
-#include "matrix.h"
 
-MainWindow::MainWindow(std::uniform_int_distribution<> distrib) :
+MainWindow::MainWindow(Game& g) :
     homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
-    game(distrib), // TODO should not be init : when implementing multiplayer, distrib will not be available at this stage
-    graphicMatrix(game.matrix) // TODO idem because game object won't be init
+    game(g),
+    state(HOME),
+    graphicMatrix(game.matrix)
 {
-    set_default_size(500, 500);
-    set_border_width(10);
 
-    add(homeButtonsContainer);
-
+    /* ============================ CREATE HOME PAGE ====== */
     homeButtonsContainer.set_margin_top(50);
 
     b_start.set_label("Commencer une partie");
@@ -49,22 +45,51 @@ MainWindow::MainWindow(std::uniform_int_distribution<> distrib) :
     l_undertext.set_label("Tetris by Billy & Sébastien.");
     homeButtonsContainer.add(l_undertext);
 
+    /* ======================= CREATE GAME PAGE =================== */
+    playingGrid.attach(graphicMatrix, 0, 0);
+
+    b_quit.set_label("Quitter la partie");
+    b_quit.signal_button_release_event().connect([&](GdkEventButton*) {
+        ChangeToPage(HOME);
+        return true;
+    });
+    playingGrid.attach(b_quit, 1, 0);
+
+    /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
+    set_default_size(500, 500);
+    set_border_width(10);
     set_title("Tetris");
+
+    add(homeButtonsContainer);
 
     this->signal_key_press_event().connect( sigc::mem_fun( *this, &MainWindow::onKeyPress ), false );
 
-    show_all_children();
+    show_all();
+}
+
+void MainWindow::ChangeToPage(Page p)
+{
+    remove();
+
+    switch (p) {
+        case HOME:
+            add(homeButtonsContainer);
+            break;
+        case GAME:
+            add(playingGrid);
+            break;
+    }
+
+    state = p;
+
+    show_all();
 }
 
 void MainWindow::StartGame()
 {
-    std::cout << "Start game" << std::endl;
-    remove();
+    game.StartGame(std::time(nullptr));
 
-    playingGrid.attach(graphicMatrix, 0, 0);
-    add(playingGrid);
-
-    show_all_children();
+    ChangeToPage(GAME);
 };
 
 

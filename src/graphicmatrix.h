@@ -20,7 +20,7 @@ protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
 
 private:
-    Matrix<tetromino_type>& matrix; // use a reference to prevent data duplication
+    Matrix<tetromino_type>& matrix; // use ref to prevent data duplication
 };
 
 
