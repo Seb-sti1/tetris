@@ -18,7 +18,7 @@ MainWindow::MainWindow(Game& g) :
     b_start.set_label("Commencer une partie");
 
     b_start.signal_clicked().connect(
-            sigc::mem_fun(*this, &MainWindow::StartGame));
+            sigc::mem_fun(*this, &MainWindow::startGame));
     homeButtonsContainer.add(b_start);
 
     b_join_multi.set_label("Rejoindre une partie multijoueur");
@@ -50,7 +50,7 @@ MainWindow::MainWindow(Game& g) :
 
     b_quit.set_label("Quitter la partie");
     b_quit.signal_button_release_event().connect([&](GdkEventButton*) {
-        ChangeToPage(HOME);
+        changeToPage(HOME);
         return true;
     });
     playingGrid.attach(b_quit, 1, 0);
@@ -67,7 +67,7 @@ MainWindow::MainWindow(Game& g) :
     show_all();
 }
 
-void MainWindow::ChangeToPage(Page p)
+void MainWindow::changeToPage(Page p)
 {
     remove();
 
@@ -85,11 +85,11 @@ void MainWindow::ChangeToPage(Page p)
     show_all();
 }
 
-void MainWindow::StartGame()
+void MainWindow::startGame()
 {
     game.StartGame(std::time(nullptr));
 
-    ChangeToPage(GAME);
+    changeToPage(GAME);
 };
 
 

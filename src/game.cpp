@@ -21,6 +21,8 @@ Game::Game() :
 }
 
 void Game::StartGame(long seed) {
+    state = IN_GAME;
+
     gen = std::mt19937(seed);
 
     start_date = std::time(nullptr);

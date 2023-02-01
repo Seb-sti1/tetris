@@ -24,7 +24,7 @@ class MainWindow : public Gtk::Window {
 public:
     explicit MainWindow(Game& g);
     ~MainWindow();
-    void StartGame();
+    void startGame();
 
 private:
     Gtk::Button b_start, b_join_multi, b_create_multi, b_help, b_quit;
@@ -41,7 +41,7 @@ private:
 
 protected:
     bool onKeyPress(GdkEventKey *event);
-    void ChangeToPage(Page p);
+    void changeToPage(Page p);
 
 
 
