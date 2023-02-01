@@ -31,6 +31,7 @@ private:
     Game game;
 
     Gtk::ButtonBox homeButtonsContainer;
+    GraphicMatrix graphicMatrix;
 
     Gtk::Grid playingGrid;
 

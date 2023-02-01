@@ -3,17 +3,18 @@
 
 #include "graphicmatrix.h"
 
-#define w 4
+#define w 8
 #define h 4
-#define w_space 0.8
+#define w_space 1.6
 #define h_space 0.8
 
-GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix) {}
-
-GraphicMatrix::~GraphicMatrix() {
-    std::cout << "good bye" << std::endl;
+GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix) {
+    set_margin_top(15);
+    set_size_request(250, 500);
 
 }
+
+GraphicMatrix::~GraphicMatrix() {}
 
 /**
  * The callback function to draw the matrix
@@ -26,14 +27,10 @@ bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     const int width = allocation.get_width();
     const int height = allocation.get_height();
 
-    std::cout << "coucou" << std::endl;
-
     cr->scale((float) width/100, (float) height/100);
 
     for (int i = 0; i < matrix.GetNumRows(); i++) {
         for (int j = 0; j < matrix.GetNumColumns(); j++) {
-            std::cout << i << ", " << j << std::endl;
-
             Gdk::Color c = tetrominoTypeToColor(matrix.At(i, j));
             cr->set_source_rgba(c.get_red(), c.get_green(), c.get_blue(), 1.0);   // green
             cr->rectangle(0, 0, w, h);
@@ -48,8 +45,9 @@ bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     return true;
 }
 
+
 Gdk::Color tetrominoTypeToColor(tetromino_type t) {
-    Gdk::Color c;
+    Gdk::Color c; // TODO static_cast<gushort> from short seems not to work
     switch (t) {
         case I:
             c.set_rgb(0.0, 1.0, 1.0);
@@ -73,7 +71,7 @@ Gdk::Color tetrominoTypeToColor(tetromino_type t) {
             c.set_rgb(static_cast<gushort>(0.4), 1.0, static_cast<gushort>(0.4));
             break;
         case NONE:
-            c.set_rgb(0.0, 0.0, 0.0);
+            c.set_rgb(static_cast<gushort>(0.5), static_cast<gushort>(0.5), static_cast<gushort>(0.5));
             break;
     }
 

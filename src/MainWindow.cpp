@@ -9,7 +9,8 @@
 
 MainWindow::MainWindow(std::uniform_int_distribution<> distrib) :
     homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
-    game(distrib)
+    game(distrib), // TODO should not be init : when implementing multiplayer, distrib will not be available at this stage
+    graphicMatrix(game.matrix) // TODO idem because game object won't be init
 {
     set_default_size(500, 500);
     set_border_width(10);
@@ -60,7 +61,6 @@ void MainWindow::StartGame()
     std::cout << "Start game" << std::endl;
     remove();
 
-    GraphicMatrix graphicMatrix(game.matrix);
     playingGrid.attach(graphicMatrix, 0, 0);
     add(playingGrid);
 
