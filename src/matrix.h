@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <cstdlib>
-#include <vector>
 #include <memory>
 #include "tetromino.h"
 #include <algorithm>
@@ -27,9 +26,9 @@ class Matrix {
       cols = SrcMatrix.cols;
       data = std::make_unique<T[]>(rows * cols);
       std::copy_n(SrcMatrix.data.get(), SrcMatrix.rows*SrcMatrix.cols, data.get());
-    };
+    }
 
-    // TO DO : add move constructor
+    // TODO : add move constructor
 
     ~Matrix() {}
 
@@ -39,14 +38,36 @@ class Matrix {
         for (unsigned int j=0; j<this->cols; j++)
         {
           std::cout << this->data[i*(this->cols)+j] << " ";
-          
         }
         std::cout << std::endl;
       }
+      std::cout << "---" << std::endl;
     }
 
     void Print(const int row, const int col) const {
       std::cout << this->data[row*(this->cols)+col] << std::endl;
+    }
+
+    //Same type matrixes addition
+    //TODO fix it
+    Matrix<T> operator+(Matrix<T> B_matrix)
+    {
+      if ((this->rows!=B_matrix.GetNumRows())||(this->cols!=B_matrix.GetNumColumns()))
+      {
+        //TODO exception si pas les mêmes tailles
+        std::cout << "Matrixes are different sizes : Addition aborted" << std::endl;
+        return *this;
+      } else {
+        Matrix<T> res_matrix(this->rows, this->cols);
+        for(unsigned int i = 0; i<this->cols; i++)
+        {
+          for(unsigned int j = 0; j<this->rows; j++)
+          {
+            res_matrix.To(i ,j ,this->At(i,j) + B_matrix.At(i,j));
+          }
+        }
+      return res_matrix;
+      }
     }
 
     T At(const int row, const int col) const {
@@ -58,16 +79,30 @@ class Matrix {
     }
 
     void To(const int row, const int col, const T value) {
-      data[row * cols + col] = value;
+      data[row * (this->cols) + col] = value;
     }
 
-    unsigned int GetNumRows() const {
+    unsigned int getNumRows() const {
       return rows;
     }
 
-    unsigned int GetNumColumns() const {
+    unsigned int getNumColumns() const {
       return cols;
     }
+
+    //Only for square matrixes now
+    //TODO finish RotateLeft
+    void RotateLeft() {
+      Matrix<T> inter_matrix = this;
+      for (unsigned int i=0; i<this->rows; i++)
+      {
+        for (unsigned int j=0; j<this->cols; j++)
+        {
+          inter_matrix.at(i,j, this->data[i*(this->cols)+this->cols-j]);
+        }
+      }
+    }
+
 
 protected:
 
