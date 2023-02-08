@@ -1,12 +1,13 @@
 #include <cairomm/context.h>
 #include <gdkmm/color.h>
+#include <random>
 
 #include "graphicmatrix.h"
 
-#define w 8
-#define h 4
-#define w_space 1.6
-#define h_space 0.8
+#define w 20
+#define h 20
+#define w_space 4
+#define h_space 4
 
 GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix) {
     set_margin_top(15);
@@ -24,22 +25,17 @@ GraphicMatrix::~GraphicMatrix() {
  */
 bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    Gtk::Allocation allocation = get_allocation();
-    const int width = allocation.get_width();
-    const int height = allocation.get_height();
-
-    cr->scale((float) width/100, (float) height/100);
-
-    for (int i = 0; i < matrix.GetNumRows(); i++) {
-        for (int j = 0; j < matrix.GetNumColumns(); j++) {
+    for (int i = 0; i < matrix.getNumRows(); i++) {
+        for (int j = 0; j < matrix.getNumColumns(); j++) {
             Gdk::Color c = tetrominoTypeToColor(matrix.At(i, j));
-            cr->set_source_rgba(c.get_red_p(), c.get_green_p(), c.get_blue_p(), 1.0);   // green
-            cr->rectangle(0, 0, w, h);
-            cr->fill_preserve();
 
-            cr->translate(w + w_space, 0);
+            if (matrix.At(i, j) != NONE)
+                std::cout << c.get_red_p() << " " << c.get_green_p() << " " <<c.get_blue_p() << std::endl;
+
+            cr->set_source_rgba(c.get_red_p(), c.get_green_p(), c.get_blue_p(), 1.0);   // green
+            cr->rectangle((w + w_space)*j, (h + h_space)*i, w, h);
+            cr->fill();
         }
-        cr->translate(- matrix.GetNumColumns() * (w + w_space), h + h_space);
     }
     cr->save();
 

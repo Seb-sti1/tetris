@@ -4,6 +4,7 @@
 
 #include "MainWindow.h"
 #include <iostream>
+#include <glibmm/main.h>
 
 MainWindow::MainWindow(Game& g) :
     homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
@@ -62,6 +63,7 @@ MainWindow::MainWindow(Game& g) :
 
     add(homeButtonsContainer);
 
+    Glib::signal_timeout().connect(sigc::mem_fun(*this, &MainWindow::update), 1000 / 30);
     this->signal_key_press_event().connect( sigc::mem_fun( *this, &MainWindow::onKeyPress ), false );
 
     show_all();
@@ -87,7 +89,7 @@ void MainWindow::changeToPage(Page p)
 
 void MainWindow::startGame()
 {
-    game.StartGame(std::time(nullptr));
+    game.startGame(std::time(nullptr));
 
     changeToPage(GAME);
 };
@@ -105,4 +107,10 @@ bool MainWindow::onKeyPress(GdkEventKey* event)
     // LEFT 65361
     // Esc 65307
     return false;
+}
+
+bool MainWindow::update()
+{
+    queue_draw();
+    return true;
 }

@@ -43,8 +43,7 @@ protected:
     bool onKeyPress(GdkEventKey *event);
     void changeToPage(Page p);
 
-
-
+    bool update();
 };
 
 
