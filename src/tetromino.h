@@ -10,7 +10,7 @@ enum tetromino_type {
     NONE = 0, I, O, T, L, J, Z, S
 };
 enum orient {
-    UP, RIGHT, DOWN, LEFT
+    UP, LEFT, DOWN, RIGHT
 };
 
 
@@ -58,8 +58,7 @@ public:
                 if (collision_matrix.At(i, j) &&
                     (matrix.At(x + i, y + j) != NONE
                      || x + i >= matrix.getNumRows()
-                     || y + j >= matrix.getNumColumns()))
-                {
+                     || y + j >= matrix.getNumColumns())) {
                     return false;
                 }
             }
@@ -70,23 +69,33 @@ public:
 
     Matrix<bool> get_collision_matrix() const {
         Matrix<bool> tetro_matrix(TETROMINO_ROWS, TETROMINO_COLS);
+
+        int px = 0;
+        int py = 0;
+
         switch (this->type) {
             case I:
+                //px = 1;
                 for (int i = 0; i < TETROMINO_ROWS; i++) tetro_matrix.To(i, 1, true);
                 break;
             case O:
+                px = 1;
+                py = 1;
                 tetro_matrix.To(0, 0, true);
                 tetro_matrix.To(0, 1, true);
                 tetro_matrix.To(1, 0, true);
                 tetro_matrix.To(1, 1, true);
                 break;
             case T:
+                px = 1;
+                py = 1;
                 tetro_matrix.To(0, 0, true);
                 tetro_matrix.To(0, 1, true);
                 tetro_matrix.To(0, 2, true);
                 tetro_matrix.To(1, 1, true);
                 break;
             case L:
+                py = 1;
                 tetro_matrix.To(0, 0, true);
                 tetro_matrix.To(1, 0, true);
                 tetro_matrix.To(2, 0, true);
@@ -113,7 +122,35 @@ public:
             default:
                 std::cout << "Enter a correct tetromino_type" << std::endl;
         }
+
+        switch (orientation) {
+            case RIGHT:
+                tetro_matrix.rotateLeft(px, py);
+                tetro_matrix.rotateLeft(px, py);
+                tetro_matrix.rotateLeft(px, py);
+                break;
+            case DOWN:
+                tetro_matrix.rotateLeft(px, py);
+                tetro_matrix.rotateLeft(px, py);
+                break;
+            case LEFT:
+                tetro_matrix.rotateLeft(px, py);
+                break;
+        }
+
         return tetro_matrix;
+    }
+
+
+    void print()
+    {
+        Matrix<bool> collision_matrix = this->get_collision_matrix();
+        for (unsigned int i = 0; i < TETROMINO_COLS; i++) {
+            for (unsigned int j = 0; j < TETROMINO_ROWS; j++) {
+                std::cout << (collision_matrix.At(i, j) ? "x" : "_");
+            }
+            std::cout << std::endl;
+        }
     }
 
 };
