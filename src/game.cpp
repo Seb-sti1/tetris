@@ -41,6 +41,7 @@ void Game::startGame(long seed)
     next_tetromino = generateTetromino();
 
     drawTetromino(current_tetromino, true);
+    lastFallDate = std::chrono::system_clock::now();
 
     // start game loop
     gameLogicThread = std::thread(&Game::gameLoop, this);
@@ -89,8 +90,6 @@ double Game::getPieceFallDelay() const
                 return 0.0333;
             return 0.0166;
     }
-    
-    return 5; // TODO should be a function of score and completed_lines
 }
 
 void Game::tetrominoHasLanded()
@@ -110,8 +109,44 @@ void Game::gameLoop()
 
     while (state == IN_GAME)
     {
-        // TODO Get inputs & move
-        // If there is any move + collision check
+
+        if (!keyQueue.empty()) // only read access so no collision issues
+        {
+            std::cout << "Should move" << std::endl;
+
+            // If there is any move + collision check
+            orient direction = getKeyPress();
+            // TODO rotation
+
+            // move the piece
+            auto new_current_tetromino(current_tetromino);
+
+            switch (direction) {
+                case UP:
+                    break;
+                case RIGHT:
+                    new_current_tetromino.y++;
+                    break;
+                case DOWN:
+                    new_current_tetromino.x++;
+                    break;
+                case LEFT:
+                    new_current_tetromino.y--;
+                    break;
+            }
+
+            // undraw current_tetromino : necessary for the validity check
+            drawTetromino(current_tetromino, false);
+
+            if (new_current_tetromino.verify_move_validity(matrix))
+            {
+                current_tetromino = new_current_tetromino;
+            }
+
+            // draw the new (if valid) state or the old one otherwise
+            drawTetromino(current_tetromino, true);
+        }
+
 
         std::chrono::duration<double> durationSinceLastFall = std::chrono::system_clock::now() - lastFallDate;
         if (durationSinceLastFall.count() > getPieceFallDelay()) {
@@ -121,12 +156,13 @@ void Game::gameLoop()
             auto new_current_tetromino(current_tetromino);
             new_current_tetromino.x++;
 
+            // undraw current_tetromino : necessary for the validity check
+            drawTetromino(current_tetromino, false);
+
             std::cout << "Tetromino is falling" << std::endl;
 
-            if (!new_current_tetromino.verify_move_validity(matrix))
+            if (new_current_tetromino.verify_move_validity(matrix))
             {
-                // undraw current_tetromino
-                drawTetromino(current_tetromino, false);
                 // change the tetromino
                 current_tetromino = new_current_tetromino; // TODO check for memory leak
                 // draw (new) current_tetromino
@@ -134,6 +170,8 @@ void Game::gameLoop()
             }
             else
             {
+                // redraw current_tetromino (without moving it)
+                drawTetromino(current_tetromino, true);
                 // when the tetromino touch the ground
                 tetrominoHasLanded();
             }
@@ -155,6 +193,31 @@ void Game::drawTetromino(Tetromino t, bool draw)
             }
         }
     }
+}
 
+void Game::stopGame() {
+    state = WAITING;
 
+    for (int i = 0; i < matrix.getNumRows(); i++) {
+        for (int j = 0; j < matrix.getNumColumns(); j++) {
+            matrix.To(i, j, NONE);
+        }
+    }
+}
+
+void Game::registerKeyPress(orient direction) {
+    // need to lock the mutex (this is executed in the graphic thread)
+    std::unique_lock<std::mutex> lck(queueMutex);
+
+    keyQueue.push(direction);
+}
+
+orient Game::getKeyPress() {
+    // need to lock the mutex (this is executed in gameLogicThread)
+    std::unique_lock<std::mutex> lck(queueMutex);
+
+    orient direction = keyQueue.front();
+    keyQueue.pop();
+
+    return direction;
 }

@@ -7,6 +7,8 @@
 #include <thread>
 #include <ctime>
 #include <chrono>
+#include <queue>
+#include <mutex>
 
 enum GameState {WAITING, IN_GAME};
 
@@ -28,6 +30,15 @@ public:
      */
     void startGame(long seed);
 
+    /**
+     * Indicate that the player leaved the game page
+     */
+    void stopGame();
+
+    /**
+     * @param direction when a player press a arrow key of the keyboard
+     */
+    void registerKeyPress(orient direction);
 
 private:
     /**
@@ -36,10 +47,16 @@ private:
      */
     GameState state;
 
+
+
+
     /**
      * Date of start of the game
      */
     time_t start_date;
+
+
+
 
     /**
      * Current level of the game
@@ -54,6 +71,9 @@ private:
      */
     unsigned int completed_lines;
 
+
+
+
     /**
      * The current tetromino controlled by the user
      */
@@ -63,6 +83,10 @@ private:
      */
     Tetromino next_tetromino;
 
+
+
+
+
     /**
      * The distribution to generate the pieces
      */
@@ -71,7 +95,13 @@ private:
      * The random generator
      */
     std::mt19937 gen;
+    /**
+     * @return a new random tetromino
+     */
     Tetromino generateTetromino();
+
+
+
 
     /**
      * The thread use to run the game loop
@@ -81,6 +111,10 @@ private:
      * The game loop function. TODO
      */
     void gameLoop();
+
+
+
+
 
     /**
      * The last date when a piece was move downward.
@@ -98,6 +132,9 @@ private:
      */
     void tetrominoHasLanded();
 
+
+
+
     /**
      * Draw or undraw a the tetromino t in the matrix
      * @param t the tetromino
@@ -105,4 +142,9 @@ private:
      */
     void drawTetromino(Tetromino t, bool draw);
 
+
+    std::queue<orient> keyQueue;
+    std::mutex queueMutex;
+
+    orient getKeyPress();
 };

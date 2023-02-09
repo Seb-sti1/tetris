@@ -5,6 +5,7 @@
 #include "MainWindow.h"
 #include <iostream>
 #include <glibmm/main.h>
+#include "tetromino.h"
 
 MainWindow::MainWindow(Game& g) :
     homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
@@ -51,6 +52,7 @@ MainWindow::MainWindow(Game& g) :
 
     b_quit.set_label("Quitter la partie");
     b_quit.signal_button_release_event().connect([&](GdkEventButton*) {
+        game.stopGame();
         changeToPage(HOME);
         return true;
     });
@@ -106,6 +108,26 @@ bool MainWindow::onKeyPress(GdkEventKey* event)
     // RIGHT 65363
     // LEFT 65361
     // Esc 65307
+
+    switch(event->keyval) {
+        case 65307:
+            game.stopGame();
+            changeToPage(HOME);
+            break;
+        case 65364:
+            game.registerKeyPress(DOWN);
+            break;
+        case 65363:
+            game.registerKeyPress(RIGHT);
+            break;
+        case 65362:
+            game.registerKeyPress(UP);
+            break;
+        case 65361:
+            game.registerKeyPress(LEFT);
+            break;
+    }
+
     return false;
 }
 
