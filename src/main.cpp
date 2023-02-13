@@ -23,7 +23,7 @@ int main (int argc, char *argv[])
             std::cout << t << " " << o << std::endl;
             Tetromino tetromino(t, 0, 0, o);
 
-            tetromino.print();
+            //tetromino.Print();
         }
     }
 

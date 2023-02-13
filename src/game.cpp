@@ -25,8 +25,13 @@ Game::Game() :
 
 Tetromino Game::generateTetromino()
 {
-    return {static_cast<tetromino_type>(distrib(gen)),
-                     0,0, UP};
+
+    Tetromino t(static_cast<tetromino_type>(distrib(gen)),
+                0,0, UP);
+
+    t.x = -t.getSpawningX();
+
+    return t;
 }
 
 void Game::startGame(long seed)
