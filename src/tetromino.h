@@ -70,32 +70,23 @@ public:
     Matrix<bool> get_collision_matrix() const {
         Matrix<bool> tetro_matrix(TETROMINO_ROWS, TETROMINO_COLS);
 
-        int px = 0;
-        int py = 0;
-
         switch (this->type) {
             case I:
-                //px = 1;
                 for (int i = 0; i < TETROMINO_ROWS; i++) tetro_matrix.To(i, 1, true);
                 break;
             case O:
-                px = 1;
-                py = 1;
                 tetro_matrix.To(0, 0, true);
                 tetro_matrix.To(0, 1, true);
                 tetro_matrix.To(1, 0, true);
                 tetro_matrix.To(1, 1, true);
                 break;
             case T:
-                px = 1;
-                py = 1;
                 tetro_matrix.To(0, 0, true);
                 tetro_matrix.To(0, 1, true);
                 tetro_matrix.To(0, 2, true);
                 tetro_matrix.To(1, 1, true);
                 break;
             case L:
-                py = 1;
                 tetro_matrix.To(0, 0, true);
                 tetro_matrix.To(1, 0, true);
                 tetro_matrix.To(2, 0, true);
@@ -125,32 +116,35 @@ public:
 
         switch (orientation) {
             case RIGHT:
-                tetro_matrix.rotateLeft(px, py);
-                tetro_matrix.rotateLeft(px, py);
-                tetro_matrix.rotateLeft(px, py);
+                tetro_matrix.rotateLeft();
+                tetro_matrix.rotateLeft();
+                tetro_matrix.rotateLeft();
                 break;
             case DOWN:
-                tetro_matrix.rotateLeft(px, py);
-                tetro_matrix.rotateLeft(px, py);
+                tetro_matrix.rotateLeft();
+                tetro_matrix.rotateLeft();
                 break;
             case LEFT:
-                tetro_matrix.rotateLeft(px, py);
+                tetro_matrix.rotateLeft();
                 break;
         }
 
         return tetro_matrix;
     }
 
-
-    void print()
+    int getSpawningX()
     {
-        Matrix<bool> collision_matrix = this->get_collision_matrix();
-        for (unsigned int i = 0; i < TETROMINO_COLS; i++) {
-            for (unsigned int j = 0; j < TETROMINO_ROWS; j++) {
-                std::cout << (collision_matrix.At(i, j) ? "x" : "_");
+        auto collision = get_collision_matrix();
+
+        for (int i = 0; i < collision.getNumRows(); i++) {
+            for (int j = 0; j < collision.getNumColumns(); j++) {
+                if (collision.At(i, j))
+                    return i;
             }
-            std::cout << std::endl;
         }
+
+        return -1;
     }
+
 
 };

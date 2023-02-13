@@ -84,13 +84,13 @@ public:
 
     //Only for square matrixes now
     //TODO finish rotateLeft
-    void rotateLeft(int px, int py) {
+    void rotateLeft() {
         auto copy(*this);
 
         for (unsigned int i = 0; i < getNumRows(); i++) {
             for (unsigned int j = 0; j < getNumColumns(); j++) {
-                unsigned x = (j - px + py) % getNumRows();
-                unsigned y = (getNumColumns() - 1 - i - px - py) % getNumColumns();
+                unsigned x = j;
+                unsigned y = getNumColumns() - 1 - i;
 
                 To(i, j, copy.At(x, y));
             }
@@ -99,7 +99,6 @@ public:
 
 
 protected:
-
     std::unique_ptr<T[]> data;
 
 };
