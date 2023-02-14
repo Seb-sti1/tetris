@@ -18,6 +18,13 @@ public:
     // Attributes
     Matrix<tetromino_type> matrix; // Matrix of the game 20*10
 
+    Matrix<tetromino_type> next_tetromino_matrix;// TODO change this
+
+    /**
+     * Current score of the game
+     */
+    unsigned int score;
+
     // Constructor
     Game();
     // Destructor
@@ -63,10 +70,6 @@ private:
      */
     unsigned int level;
     /**
-     * Current score of the game
-     */
-    unsigned int score;
-    /**
      * The number of completed lines
      */
     unsigned int completed_lines;
@@ -82,7 +85,6 @@ private:
      * The next tetromino (displayed in the corner of the frame)
      */
     Tetromino next_tetromino;
-
 
 
 
@@ -108,7 +110,7 @@ private:
      */
     std::thread gameLogicThread;
     /**
-     * The game loop function. TODO
+     * The game loop function.
      */
     void gameLoop();
 

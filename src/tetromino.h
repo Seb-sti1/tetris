@@ -147,4 +147,15 @@ public:
     }
 
 
+    void print()
+    {
+        Matrix<bool> collision_matrix = this->get_collision_matrix();
+        for (unsigned int i = 0; i < TETROMINO_COLS; i++) {
+            for (unsigned int j = 0; j < TETROMINO_ROWS; j++) {
+                std::cout << (collision_matrix.At(i, j) ? "x" : "_");
+            }
+            std::cout << std::endl;
+        }
+    }
+
 };

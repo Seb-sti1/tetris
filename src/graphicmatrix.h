@@ -13,7 +13,6 @@ class GraphicMatrix : public Gtk::DrawingArea
 {
 public:
     explicit GraphicMatrix(Matrix<tetromino_type>& matrix);
-    virtual ~GraphicMatrix();
 
 protected:
     //Override default signal handler:

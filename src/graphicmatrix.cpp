@@ -1,6 +1,5 @@
 #include <cairomm/context.h>
 #include <gdkmm/color.h>
-#include <random>
 
 #include "graphicmatrix.h"
 
@@ -9,19 +8,18 @@
 #define w_space 4
 #define h_space 4
 
-GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix) {
-    set_margin_top(15);
-    set_size_request(250, 500);
-}
+GraphicMatrix::GraphicMatrix(Matrix<tetromino_type>& matrix) : matrix(matrix)
+{
+    this->set_margin_top(15);
 
-GraphicMatrix::~GraphicMatrix() {
-    std::cout << "Bye Bye" << std::endl;
+    this->set_size_request((w + w_space) * ((int) matrix.getNumColumns()),
+                     (h + h_space) * ((int) matrix.getNumRows()));
 }
 
 /**
  * The callback function to draw the matrix
  * @param cr the context (a class from GtK lib)
- * @return ??
+ * @return drawing successful
  */
 bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
@@ -34,7 +32,7 @@ bool GraphicMatrix::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
             cr->fill();
         }
     }
-    cr->save();
+    cr->stroke();
 
     return true;
 }

@@ -11,7 +11,8 @@ Game::Game() :
         score(0),
         completed_lines(0),
         current_tetromino(NONE),
-        next_tetromino(NONE)
+        next_tetromino(NONE),
+        next_tetromino_matrix(TETROMINO_ROWS, TETROMINO_COLS)
 {
     state = WAITING;
 
@@ -44,6 +45,13 @@ void Game::startGame(long seed)
     // generate the first two tetrominos
     current_tetromino = generateTetromino();
     next_tetromino = generateTetromino();
+
+    auto collision = next_tetromino.get_collision_matrix();
+    for (int i = 0; i < TETROMINO_ROWS; i++) {
+        for (int j = 0; j < TETROMINO_COLS; j++) {
+            next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
+        }
+    }
 
     drawTetromino(current_tetromino, true);
     lastFallDate = std::chrono::system_clock::now();
@@ -104,6 +112,13 @@ void Game::tetrominoHasLanded()
 
     current_tetromino = next_tetromino; // TODO check for memory leak
     next_tetromino = generateTetromino();
+
+    auto collision = next_tetromino.get_collision_matrix();
+    for (int i = 0; i < TETROMINO_ROWS; i++) {
+        for (int j = 0; j < TETROMINO_COLS; j++) {
+            next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
+        }
+    }
 
     // draw current_tetromino
     drawTetromino(current_tetromino, true);

@@ -8,10 +8,11 @@
 #include "tetromino.h"
 
 MainWindow::MainWindow(Game& g) :
-    homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
-    game(g),
-    state(HOME),
-    graphicMatrix(game.matrix)
+        homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
+        game(g),
+        state(HOME),
+        gameMatrix(game.matrix),
+        previewMatrix(game.next_tetromino_matrix)
 {
 
     /* ============================ CREATE HOME PAGE ====== */
@@ -48,7 +49,13 @@ MainWindow::MainWindow(Game& g) :
     homeButtonsContainer.add(l_undertext);
 
     /* ======================= CREATE GAME PAGE =================== */
-    playingGrid.attach(graphicMatrix, 0, 0);
+    gameMatrix.set_margin_right(20);
+    playingGrid.attach(gameMatrix, 0, 0, 1, 3);
+
+    playingGrid.attach(previewMatrix, 1, 0);
+
+    score.set_text("Your score is " + std::to_string(game.score));
+    playingGrid.attach(score, 1, 1);
 
     b_quit.set_label("Quitter la partie");
     b_quit.signal_button_release_event().connect([&](GdkEventButton*) {
@@ -56,7 +63,7 @@ MainWindow::MainWindow(Game& g) :
         changeToPage(HOME);
         return true;
     });
-    playingGrid.attach(b_quit, 1, 0);
+    playingGrid.attach(b_quit, 1, 2);
 
     /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
     set_default_size(500, 500);
@@ -133,6 +140,8 @@ bool MainWindow::onKeyPress(GdkEventKey* event)
 
 bool MainWindow::update()
 {
+    score.set_text("Your score is " + std::to_string(game.score));
+
     queue_draw();
     return true;
 }
