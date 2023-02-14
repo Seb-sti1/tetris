@@ -27,10 +27,11 @@ Game::Game() :
 Tetromino Game::generateTetromino()
 {
 
-    Tetromino t(static_cast<tetromino_type>(distrib(gen)),
+    Tetromino t(O,
                 0,0, UP);
 
     t.x = -t.getSpawningX();
+    t.y = 5;
 
     return t;
 }
@@ -99,29 +100,114 @@ double Game::getPieceFallDelay() const
         case 18:
             return 0.05;
         default:
-            if (level < 2)
+            if (level < 20)
                 return 0.0333;
             return 0.0166;
     }
 }
 
-void Game::tetrominoHasLanded()
+unsigned Game::getScore(int completedLines) const
 {
-    std::cout << "Tetromino has landed" << std::endl;
-    // TODO check for completed lines (+ move down + score)
+    switch (completedLines) {
+        case 1:
+            return 40*(level + 1);
+        case 2:
+            return 100*(level + 1);
+        case 3:
+            return 300*(level + 1);
+        case 4:
+            return 1200*(level + 1);
+        default:
+            return 0;
+    }
+}
 
-    current_tetromino = next_tetromino; // TODO check for memory leak
-    next_tetromino = generateTetromino();
+int Game::checkForCompletedLines()
+{
+    int completeLine = -1;
 
-    auto collision = next_tetromino.get_collision_matrix();
-    for (int i = 0; i < TETROMINO_ROWS; i++) {
-        for (int j = 0; j < TETROMINO_COLS; j++) {
-            next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
+    for (int i = matrix.getNumRows() - 1; i >= 0; i--)
+    {
+        bool complete = true;
+
+        // Try to find a complete line starting from the ground
+        for (int j = 0; j < matrix.getNumColumns(); j++)
+        {
+            if (matrix.At(i, j) == NONE)
+            {
+                complete = false;
+                break;
+            }
+        }
+
+        // exit the loops when such line found
+        if (complete)
+        {
+            completeLine = i;
+            break;
         }
     }
 
-    // draw current_tetromino
-    drawTetromino(current_tetromino, true);
+    // if a complete line was found
+    if (completeLine != -1)
+    {
+        // copy the line above
+        for (int i = completeLine; i > 0; i--)
+        {
+            matrix.Print();
+            for (int j = 0; j < matrix.getNumColumns(); j++)
+            {
+                matrix.To(i, j, matrix.At(i - 1,j));
+            }
+        }
+
+        // reset the top line
+        for (int j = 0; j < matrix.getNumColumns(); j++)
+        {
+            matrix.To(0, j, NONE);
+        }
+
+        return checkForCompletedLines() + 1;
+    }
+
+
+    return 0;
+}
+
+
+
+void Game::tetrominoHasLanded()
+{
+    std::cout << "Tetromino has landed" << std::endl;
+
+    auto numberOfCompletedLines = checkForCompletedLines();
+
+    completed_lines += numberOfCompletedLines;
+    score += getScore(numberOfCompletedLines);
+
+    current_tetromino = next_tetromino; // TODO check for memory leak
+
+    if (current_tetromino.verify_move_validity(matrix))
+    {// possible to spawn
+        next_tetromino = generateTetromino();
+
+        auto collision = next_tetromino.get_collision_matrix();
+        for (int i = 0; i < TETROMINO_ROWS; i++) {
+            for (int j = 0; j < TETROMINO_COLS; j++) {
+                next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
+            }
+        }
+
+        // draw current_tetromino
+        drawTetromino(current_tetromino, true);
+    }
+    else
+    {
+        // this state will be detected by the window
+        // that will change to the after game screen
+        state = FINISH;
+    }
+
 }
 
 void Game::gameLoop()
@@ -179,8 +265,6 @@ void Game::gameLoop()
             // undraw current_tetromino : necessary for the validity check
             drawTetromino(current_tetromino, false);
 
-            std::cout << "Tetromino is falling" << std::endl;
-
             if (new_current_tetromino.verify_move_validity(matrix))
             {
                 // change the tetromino
@@ -217,6 +301,8 @@ void Game::drawTetromino(Tetromino t, bool draw)
 
 void Game::stopGame() {
     state = WAITING;
+
+    keyQueue.empty();
 
     for (int i = 0; i < matrix.getNumRows(); i++) {
         for (int j = 0; j < matrix.getNumColumns(); j++) {

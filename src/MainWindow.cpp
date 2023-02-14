@@ -8,7 +8,8 @@
 #include "tetromino.h"
 
 MainWindow::MainWindow(Game& g) :
-        homeButtonsContainer(Gtk::ORIENTATION_VERTICAL),
+        homeContainer(Gtk::ORIENTATION_VERTICAL),
+        afterGameContainer(Gtk::ORIENTATION_VERTICAL),
         game(g),
         state(HOME),
         gameMatrix(game.matrix),
@@ -16,37 +17,41 @@ MainWindow::MainWindow(Game& g) :
 {
 
     /* ============================ CREATE HOME PAGE ====== */
-    homeButtonsContainer.set_margin_top(50);
+    homeContainer.set_margin_top(50);
 
     b_start.set_label("Commencer une partie");
 
-    b_start.signal_clicked().connect(
-            sigc::mem_fun(*this, &MainWindow::startGame));
-    homeButtonsContainer.add(b_start);
+    b_start.signal_button_release_event().connect([&](GdkEventButton*) {
+        game.startGame(std::time(nullptr));
+
+        changeToPage(GAME);
+        return true;
+    });
+    homeContainer.add(b_start);
 
     b_join_multi.set_label("Rejoindre une partie multijoueur");
     b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Join multiplayer game" << std::endl;
         return true;
     });
-    homeButtonsContainer.add(b_join_multi);
+    homeContainer.add(b_join_multi);
 
     b_create_multi.set_label("Créer une partie multijoueur");
     b_create_multi.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Start multiplayer game" << std::endl;
         return true;
     });
-    homeButtonsContainer.add(b_create_multi);
+    homeContainer.add(b_create_multi);
 
     b_help.set_label("Aide");
     b_help.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Help" << std::endl;
         return true;
     });
-    homeButtonsContainer.add(b_help);
+    homeContainer.add(b_help);
 
-    l_undertext.set_label("Tetris by Billy & Sébastien.");
-    homeButtonsContainer.add(l_undertext);
+    homeUndertext.set_label("Tetris by Billy & Sébastien.");
+    homeContainer.add(homeUndertext);
 
     /* ======================= CREATE GAME PAGE =================== */
     gameMatrix.set_margin_right(20);
@@ -57,20 +62,35 @@ MainWindow::MainWindow(Game& g) :
     score.set_text("Your score is " + std::to_string(game.score));
     playingGrid.attach(score, 1, 1);
 
-    b_quit.set_label("Quitter la partie");
-    b_quit.signal_button_release_event().connect([&](GdkEventButton*) {
+    gameQuit.set_label("Quitter la partie");
+    gameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
         game.stopGame();
         changeToPage(HOME);
         return true;
     });
-    playingGrid.attach(b_quit, 1, 2);
+    playingGrid.attach(gameQuit, 1, 2);
+
+    /* ======================= CREATE GAME PAGE =================== */
+    afterGameContainer.add(congratulation);
+
+    afterGameQuit.set_label("Quitter la partie");
+    afterGameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
+        game.stopGame();
+        changeToPage(HOME);
+        return true;
+    });
+    afterGameContainer.add(afterGameQuit);
+
+    afterGameUndertext.set_label("Tetris by Billy & Sébastien.");
+    afterGameContainer.add(afterGameUndertext);
+
 
     /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
     set_default_size(500, 500);
     set_border_width(10);
     set_title("Tetris");
 
-    add(homeButtonsContainer);
+    add(homeContainer);
 
     Glib::signal_timeout().connect(sigc::mem_fun(*this, &MainWindow::update), 1000 / 30);
     this->signal_key_press_event().connect( sigc::mem_fun( *this, &MainWindow::onKeyPress ), false );
@@ -84,10 +104,13 @@ void MainWindow::changeToPage(Page p)
 
     switch (p) {
         case HOME:
-            add(homeButtonsContainer);
+            add(homeContainer);
             break;
         case GAME:
             add(playingGrid);
+            break;
+        case AFTER_GAME:
+            add(afterGameContainer);
             break;
     }
 
@@ -96,19 +119,11 @@ void MainWindow::changeToPage(Page p)
     show_all();
 }
 
-void MainWindow::startGame()
-{
-    game.startGame(std::time(nullptr));
-
-    changeToPage(GAME);
-};
-
-
-
-MainWindow::~MainWindow() = default;
-
 bool MainWindow::onKeyPress(GdkEventKey* event)
 {
+    if (game.state != IN_GAME)
+        return false;
+
     std::cout << event->keyval << ' ' << event->hardware_keycode << ' ' << event->state << std::endl;
     // UP 65362
     // DOWN 65364
@@ -135,13 +150,34 @@ bool MainWindow::onKeyPress(GdkEventKey* event)
             break;
     }
 
-    return false;
+    return true;
 }
 
 bool MainWindow::update()
 {
-    score.set_text("Your score is " + std::to_string(game.score));
+    switch (game.state) {
+        case WAITING:
+            break;
+        case IN_GAME:
+            score.set_text("Your score is " + std::to_string(game.score));
 
-    queue_draw();
+            queue_draw();
+            break;
+        case FINISH:
+
+            if (state != AFTER_GAME)
+            {
+                changeToPage(AFTER_GAME);
+
+                std::string scores = "You completed " + std::to_string(game.completed_lines) + " line(s), scored " + std::to_string(game.score) + " point(s)\n and reached the level " + std::to_string(game.level);
+
+                congratulation.set_margin_top(50);
+                congratulation.set_markup("<span size='large'><b>The game is over!</b></span>\n\n\n"
+                                          "<span size='large'>" + scores + ".</span>");
+                congratulation.set_alignment(Gtk::ALIGN_CENTER, Gtk::ALIGN_CENTER);
+            }
+
+            break;
+    }
     return true;
 }

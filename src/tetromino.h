@@ -56,9 +56,9 @@ public:
                 // and either the corresponding cell is already occupy or outside the matrix
                 // then return false
                 if (collision_matrix.At(i, j) &&
-                    (matrix.At(x + i, y + j) != NONE
-                     || x + i >= matrix.getNumRows()
-                     || y + j >= matrix.getNumColumns())) {
+                    (x + i >= matrix.getNumRows()
+                     || y + j >= matrix.getNumColumns()
+                     || matrix.At(x + i, y + j) != NONE)) {
                     return false;
                 }
             }

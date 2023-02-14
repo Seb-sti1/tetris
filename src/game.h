@@ -10,25 +10,45 @@
 #include <queue>
 #include <mutex>
 
-enum GameState {WAITING, IN_GAME};
+enum GameState {WAITING, IN_GAME, FINISH};
 
 class Game {
 
 public:
-    // Attributes
+    /**
+     * Current state of the game. When IN_GAME the gameLoop function
+     * should be running
+     */
+    GameState state;
+
+    /**
+     * The game matrix. It contains all tetrominos (also the one currently played)
+     */
     Matrix<tetromino_type> matrix; // Matrix of the game 20*10
 
+    /**
+     * The matrix of the next tetromino for preview
+     */
     Matrix<tetromino_type> next_tetromino_matrix;// TODO change this
 
+
+    /**
+     * Current level of the game
+     */
+    unsigned int level;
+    /**
+     * The number of completed lines
+     */
+    unsigned int completed_lines;
     /**
      * Current score of the game
      */
     unsigned int score;
 
-    // Constructor
+    /**
+     * The game object that
+     */
     Game();
-    // Destructor
-    //~Game();
 
     /**
      * Start the game. Will generate the first piece and
@@ -49,30 +69,9 @@ public:
 
 private:
     /**
-     * Current state of the game. When IN_GAME the gameLoop function
-     * should be running
-     */
-    GameState state;
-
-
-
-
-    /**
      * Date of start of the game
      */
     time_t start_date;
-
-
-
-
-    /**
-     * Current level of the game
-     */
-    unsigned int level;
-    /**
-     * The number of completed lines
-     */
-    unsigned int completed_lines;
 
 
 
@@ -126,6 +125,12 @@ private:
      * @return The function that calculate the delay before a piece should fall
      */
     double getPieceFallDelay() const;
+    /**
+     * Calculate the score to add when completing completedLines
+     * @param completedLines the number of lines just completed
+     * @return the score to add
+     */
+    unsigned getScore(int completedLines) const;
 
     /**
      * When a tetromino has landed :
@@ -133,7 +138,7 @@ private:
      *  - change current_tetromino
      */
     void tetrominoHasLanded();
-
+    int checkForCompletedLines();
 
 
 
@@ -145,8 +150,16 @@ private:
     void drawTetromino(Tetromino t, bool draw);
 
 
+    /**
+     * The queue that stores the key pressed
+     */
     std::queue<orient> keyQueue;
+    /**
+     * The mutex to coordinate the mutex
+     */
     std::mutex queueMutex;
-
+    /**
+     * @return the last key pressed by the user
+     */
     orient getKeyPress();
 };

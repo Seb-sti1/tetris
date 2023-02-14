@@ -17,29 +17,34 @@
 #include "game.h"
 #include "graphicmatrix.h"
 
-enum Page {HOME, GAME};
+enum Page {HOME, GAME, AFTER_GAME};
 
 class MainWindow : public Gtk::Window {
 
 public:
     explicit MainWindow(Game& g);
-    ~MainWindow();
-    void startGame();
 
 private:
-    Gtk::Button b_start, b_join_multi, b_create_multi, b_help, b_quit;
-    Gtk::Label l_undertext;
-
     Game& game;
+    Page state;
 
-    Gtk::ButtonBox homeButtonsContainer;
-    GraphicMatrix gameMatrix;
+    // main page
+    Gtk::ButtonBox homeContainer;
+    Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
+    Gtk::Label homeUndertext;
 
+    // game page
     Gtk::Grid playingGrid;
+    GraphicMatrix gameMatrix;
     Gtk::Label score;
+    Gtk::Button gameQuit;
     GraphicMatrix previewMatrix;
 
-    Page state;
+    // after game page
+    Gtk::ButtonBox afterGameContainer;
+    Gtk::Label congratulation;
+    Gtk::Button afterGameQuit;
+    Gtk::Label afterGameUndertext;
 
 protected:
     bool onKeyPress(GdkEventKey *event);
