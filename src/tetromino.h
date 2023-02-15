@@ -115,17 +115,20 @@ public:
                 std::cout << "Enter a correct tetromino_type" << std::endl;
         }
 
-        switch (orientation) {
-            case RIGHT:
-                tetro_matrix.rotateRight();
-                break;
-            case DOWN:
-                tetro_matrix.rotateLeft();
-                tetro_matrix.rotateLeft();
-                break;
-            case LEFT:
-                tetro_matrix.rotateLeft();
-                break;
+        if (this->type!=O) // O does not need to rotate and it would create wrong moves because it is not centered in the collision matrix
+        {
+            switch (orientation) {
+                case RIGHT:
+                    tetro_matrix.rotateRight();
+                    break;
+                case DOWN:
+                    tetro_matrix.rotateLeft();
+                    tetro_matrix.rotateLeft();
+                    break;
+                case LEFT:
+                    tetro_matrix.rotateLeft();
+                    break;
+            }
         }
 
         return tetro_matrix;

@@ -26,12 +26,10 @@ Game::Game() :
 
 Tetromino Game::generateTetromino()
 {
-
-    Tetromino t(O,
+    Tetromino t(static_cast<tetromino_type>(distrib(gen)),
                 0,0, UP);
 
     t.x = -t.getSpawningX();
-    t.y = 5;
 
     return t;
 }
