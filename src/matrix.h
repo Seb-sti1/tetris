@@ -3,10 +3,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <memory>
-#include "tetromino.h"
 #include <algorithm>
 
-// Matrix of tetromino_type, maybe do a template out of it
+
 template<class T>
 class Matrix {
 
@@ -85,14 +84,18 @@ public:
     //Only for square matrixes now
     //TODO finish rotateLeft
     void rotateLeft() {
-        auto copy(*this);
-
-        for (unsigned int i = 0; i < getNumRows(); i++) {
-            for (unsigned int j = 0; j < getNumColumns(); j++) {
-                unsigned x = j;
-                unsigned y = getNumColumns() - 1 - i;
-
-                To(i, j, copy.At(x, y));
+        if (this->cols==this->rows)
+        {
+            for (unsigned int i = 0; i < this->rows/2; i++)
+            {
+                for (unsigned int j = i; j < this->cols-i-1; j++)
+                {
+                    int temp=this->At(i,j);
+                    this->To(i,j,this->At(j, this->rows-i-1));
+                    this->To(j,this->rows-i-1,this->At(this->rows-i-1,this->rows-j-1));
+                    this->To(this->rows-i-1,this->rows-j-1,this->At(this->rows-j-1,i));
+                    this->To(this->rows-j-1,i,temp);
+                }
             }
         }
     }
