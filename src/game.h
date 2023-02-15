@@ -147,7 +147,7 @@ private:
      * @param t the tetromino
      * @param draw if it should draw or undraw the tetromino
      */
-    void drawTetromino(Tetromino t, bool draw);
+    void drawTetromino(const Tetromino& t, bool draw);
 
 
     /**

@@ -14,7 +14,7 @@
 #include <gtkmm/label.h>
 #include <gtkmm/frame.h>
 #include <gtkmm/grid.h>
-#include "game.h"
+#include "../game.h"
 #include "graphicmatrix.h"
 
 enum Page {HOME, GAME, AFTER_GAME};

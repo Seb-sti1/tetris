@@ -45,8 +45,6 @@ public:
             y(y_init),
             orientation(orientation_init) {}
 
-    ~Tetromino() = default;
-
     bool verify_move_validity(Matrix<tetromino_type> &matrix) const {
         Matrix<bool> collision_matrix = this->get_collision_matrix();
         for (unsigned int i = 0; i < TETROMINO_COLS; i++) {

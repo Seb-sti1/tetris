@@ -6,8 +6,8 @@
 #define TETRIS_GRAPHICMATRIX_H
 
 #include <gtkmm/drawingarea.h>
-#include "tetromino.h"
-#include "matrix.h"
+#include "../tetromino.h"
+#include "../matrix.h"
 
 class GraphicMatrix : public Gtk::DrawingArea
 {

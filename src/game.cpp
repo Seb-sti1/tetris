@@ -185,7 +185,7 @@ void Game::tetrominoHasLanded()
     completed_lines += numberOfCompletedLines;
     score += getScore(numberOfCompletedLines);
 
-    current_tetromino = next_tetromino; // TODO check for memory leak
+    current_tetromino = next_tetromino;
 
     if (current_tetromino.verify_move_validity(matrix))
     {// possible to spawn
@@ -268,7 +268,7 @@ void Game::gameLoop()
             if (new_current_tetromino.verify_move_validity(matrix))
             {
                 // change the tetromino
-                current_tetromino = new_current_tetromino; // TODO check for memory leak
+                current_tetromino = new_current_tetromino;
                 // draw (new) current_tetromino
                 drawTetromino(current_tetromino, true);
             }
@@ -283,7 +283,7 @@ void Game::gameLoop()
     }
 }
 
-void Game::drawTetromino(Tetromino t, bool draw)
+void Game::drawTetromino(const Tetromino& t, bool draw)
 {
     auto collision = t.get_collision_matrix();
 

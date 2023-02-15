@@ -3,7 +3,7 @@
 //
 
 #include <gtkmm/application.h>
-#include "MainWindow.h"
+#include "ui/MainWindow.h"
 
 
 
