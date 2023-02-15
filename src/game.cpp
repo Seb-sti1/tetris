@@ -48,8 +48,8 @@ void Game::startGame(long seed)
     next_tetromino = generateTetromino();
 
     auto collision = next_tetromino.get_collision_matrix();
-    for (int i = 0; i < TETROMINO_ROWS; i++) {
-        for (int j = 0; j < TETROMINO_COLS; j++) {
+    for (int i = 0; i < collision.getNumRows(); i++) {
+        for (int j = 0; j < collision.getNumColumns(); j++) {
             next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
         }
     }
@@ -192,8 +192,8 @@ void Game::tetrominoHasLanded()
         next_tetromino = generateTetromino();
 
         auto collision = next_tetromino.get_collision_matrix();
-        for (int i = 0; i < TETROMINO_ROWS; i++) {
-            for (int j = 0; j < TETROMINO_COLS; j++) {
+        for (int i = 0; i < collision.getNumRows(); i++) {
+            for (int j = 0; j < collision.getNumColumns(); j++) {
                 next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
             }
         }
@@ -229,6 +229,8 @@ void Game::gameLoop()
 
             switch (direction) {
                 case UP:
+                    // TODO verify that the next line properly works (spoiler it doesn't and its behaviour has to be corriged)
+                    new_current_tetromino.orientation = static_cast<orient>((new_current_tetromino.orientation+1)%7); // 7 tetromino types
                     break;
                 case RIGHT:
                     new_current_tetromino.y++;
