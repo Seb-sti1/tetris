@@ -3,10 +3,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <memory>
-#include "tetromino.h"
 #include <algorithm>
 
-// Matrix of tetromino_type, maybe do a template out of it
+
 template<class T>
 class Matrix {
 
@@ -44,24 +43,6 @@ public:
         std::cout << this->data[row * (this->cols) + col] << std::endl;
     }
 
-    //Same type matrixes addition
-    //TODO fix it
-    Matrix<T> operator+(Matrix<T> B_matrix) {
-        if ((this->rows != B_matrix.GetNumRows()) || (this->cols != B_matrix.GetNumColumns())) {
-            //TODO exception si pas les mêmes tailles
-            std::cout << "Matrixes are different sizes : Addition aborted" << std::endl;
-            return *this;
-        } else {
-            Matrix<T> res_matrix(this->rows, this->cols);
-            for (unsigned int i = 0; i < this->cols; i++) {
-                for (unsigned int j = 0; j < this->rows; j++) {
-                    res_matrix.To(i, j, this->At(i, j) + B_matrix.At(i, j));
-                }
-            }
-            return res_matrix;
-        }
-    }
-
     T At(const int row, const int col) const {
         return this->data[row * (this->cols) + col];
     }
@@ -82,17 +63,38 @@ public:
         return cols;
     }
 
-    //Only for square matrixes now
-    //TODO finish rotateLeft
+    // only for square matrixes
     void rotateLeft() {
-        auto copy(*this);
+        if (this->cols==this->rows)
+        {
+            for (unsigned int i = 0; i < this->rows/2; i++)
+            {
+                for (unsigned int j = i; j < this->cols-i-1; j++)
+                {
+                    int temp=this->At(i,j);
+                    this->To(i,j,this->At(j, this->rows-i-1));
+                    this->To(j,this->rows-i-1,this->At(this->rows-i-1,this->rows-j-1));
+                    this->To(this->rows-i-1,this->rows-j-1,this->At(this->rows-j-1,i));
+                    this->To(this->rows-j-1,i,temp);
+                }
+            }
+        }
+    }
 
-        for (unsigned int i = 0; i < getNumRows(); i++) {
-            for (unsigned int j = 0; j < getNumColumns(); j++) {
-                unsigned x = j;
-                unsigned y = getNumColumns() - 1 - i;
-
-                To(i, j, copy.At(x, y));
+    // only for square matrixes
+    void rotateRight() {
+        if (this->cols==this->rows)
+        {
+            for (unsigned int i = 0; i < this->rows/2; i++)
+            {
+                for (unsigned int j = i; j < this->cols-i-1; j++)
+                {
+                    int temp=this->At(i,j);
+                    this->To(i,j,this->At(this->rows-j-1, i));
+                    this->To(this->rows-j-1, i, this->At(this->rows-i-1,this->rows-j-1));
+                    this->To(this->rows-i-1,this->rows-j-1,this->At(j, this->rows-i-1));
+                    this->To(j, this->rows-i-1,temp);
+                }
             }
         }
     }
