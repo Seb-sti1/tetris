@@ -25,7 +25,7 @@ The pieces generated will be the same for all the players.
 
 * Start a multiplayer game
 * Retrieve the status of the game
-* The server can send the random generator and start the game
+* The Server can send the random generator and start the game
 
 ## How it works
 

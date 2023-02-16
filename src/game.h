@@ -10,7 +10,7 @@
 #include <queue>
 #include <mutex>
 
-enum GameState {WAITING, IN_GAME, FINISH};
+enum GameState {WAITING, IN_GAME, DEAD, FINISH};
 
 class Game {
 

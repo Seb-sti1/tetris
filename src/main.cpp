@@ -4,14 +4,15 @@
 
 #include <gtkmm/application.h>
 #include "ui/MainWindow.h"
-
-
+#include "multiplayer/server.h"
 
 
 int main (int argc, char *argv[])
 {
     auto app = Gtk::Application::create(argc, argv, "org.tetris");
 
+
+    auto s = Server();
 
 /*
     for (int j = I; j != S + 1; j++)
