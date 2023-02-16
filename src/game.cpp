@@ -177,7 +177,7 @@ int Game::checkForCompletedLines()
 void Game::tetrominoHasLanded()
 {
     std::cout << "Tetromino has landed" << std::endl;
-
+    // TODO change level
     auto numberOfCompletedLines = checkForCompletedLines();
 
     completed_lines += numberOfCompletedLines;
