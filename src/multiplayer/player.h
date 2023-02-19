@@ -11,7 +11,7 @@
 class Player : messageable {
 
 public:
-    implicit Player(int client_socket);
+    explicit Player(int client_socket);
 
 
     char* name;
@@ -23,6 +23,7 @@ public:
 
     int serialize(char data);
     void deserialize(char* data);
+    messageType getType();
 
 private:
     int client_socket;
