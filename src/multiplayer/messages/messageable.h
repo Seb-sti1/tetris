@@ -11,6 +11,7 @@ enum messageType {GAME_START, PLAYER_DATA, NEW_PLAYER, DISCONNECT, GET_PLAYER_DA
 
 class messageable {
 
+public:
     char* toData();
     virtual int serialize(char* data) = 0;
     virtual void deserialize(int size, char* data) = 0;

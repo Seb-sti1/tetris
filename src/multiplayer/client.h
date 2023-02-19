@@ -7,18 +7,21 @@
 
 
 #include <string>
+#include "player.h"
 
 class Client {
 
 public:
-    Client(char* ip);
+    explicit Client(char ip[], char name[]);
 
     ~Client();
 
-    void terminate();
+    void terminate() const;
 
 private:
     int client_socket;
+
+    Player self;
 
 };
 

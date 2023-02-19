@@ -4,28 +4,51 @@
 
 #include "player.h"
 
-Player::Player(int client_socket)
+struct player {
+    char* name;
+    unsigned level;
+    unsigned score;
+    unsigned completedLines;
+    bool alive;
+};
+
+
+Player::Player(int& client_socket) : client_socket(client_socket),
+level(0), score(0), completedLines(0), alive(true) {}
+
+int Player::serialize(char *data)
 {
-    this->client_socket = client_socket;
+    auto* p = new player;
+
+    p->name = name;
+    p->level = level;
+    p->score = score;
+    p->completedLines = completedLines;
+    p->alive = alive;
+
+    data = reinterpret_cast<char *>(p);
+
+    return sizeof(player);
 }
 
-int Player::serialize(char data)
+void Player::deserialize(int size, char* data)
 {
+    auto* p = reinterpret_cast<player *>(data);
 
-
-
-}
-
-void Player::deserialize(char *data)
-{
-
-
-
+    name = p->name;
+    level = p->level;
+    score = p->score;
+    completedLines = p->completedLines;
+    alive = p->alive;
 
 }
 
 messageType Player::getType() {
     return PLAYER_DATA;
+}
+
+void Player::setName(char* n) {
+    name = n;
 }
 
 

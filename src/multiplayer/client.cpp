@@ -7,10 +7,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <string>
 
 
-Client::Client(char* ip) {
+Client::Client(char ip[], char name[]) : self(client_socket) {
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (client_socket == -1) {
@@ -27,32 +26,18 @@ Client::Client(char* ip) {
         // TODO exception
     }
 
-
     std::cout << "Connected to server" << std::endl;
 
-    // send data to the server
-    std::string message = "Hello, server!";
-    if (send(client_socket, message.c_str(), message.size(), 0) < 0) {
-        std::cerr << "Failed to send data" << std::endl;
-        // TODO exception
-    }
+    self.setName(name);
 
-    std::cout << "Data sent to server: " << message << std::endl;
-
-    // receive data from the server
-    char buffer[1024] = {0};
-    if (recv(client_socket, buffer, sizeof(buffer), 0) < 0) {
-        std::cerr << "Failed to receive data" << std::endl;
-        // TODO exception
-    }
-
-    std::cout << "Data received from server: " << buffer << std::endl;
+    char *c = self.toData();
+    // TODO sendData();
 }
 
 Client::~Client() {
     terminate();
 }
 
-void Client::terminate() {
+void Client::terminate() const {
     close(client_socket);
 }

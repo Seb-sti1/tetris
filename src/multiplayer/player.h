@@ -8,11 +8,10 @@
 
 #include "messages/messageable.h"
 
-class Player : messageable {
+class Player : public messageable {
 
 public:
-    explicit Player(int client_socket);
-
+    explicit Player(int& client_socket);
 
     char* name;
 
@@ -21,12 +20,14 @@ public:
     unsigned completedLines;
     bool alive;
 
-    int serialize(char data);
-    void deserialize(char* data);
-    messageType getType();
+    int serialize(char* data) override;
+    void deserialize(int size, char* data) override;
+    messageType getType() override;
+
+    void setName(char *string);
 
 private:
-    int client_socket;
+    int& client_socket;
 
 
 };
