@@ -6,10 +6,12 @@
 #define TETRIS_PLAYER_H
 
 
-class Player {
+#include "messages/messageable.h"
+
+class Player : messageable {
 
 public:
-    Player(int client_socket);
+    implicit Player(int client_socket);
 
 
     char* name;
@@ -19,6 +21,8 @@ public:
     unsigned completedLines;
     bool alive;
 
+    int serialize(char data);
+    void deserialize(char* data);
 
 private:
     int client_socket;
