@@ -93,3 +93,12 @@ bool Server::sendData(int client_socket, const char* message)
     }
     return true;
 }
+
+bool Server::broadcastData(int client_socket = -1, const char* message)
+{
+    // Send message to every clients except client_socket if given as an argument
+    for (int socket_idx=0; (socket_idx<client_sockets.size()) && (client_sockets[socket_idx]!=client_socket); socket_idx++)
+    {
+        sendData(client_sockets[socket_idx], message);
+    }
+}

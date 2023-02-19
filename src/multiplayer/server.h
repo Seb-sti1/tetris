@@ -55,6 +55,9 @@ private:
 
     bool receiveData(int client_socket, char* buffer);
 
+    // Broadcasts data to all client sockets except client_socket
+    bool broadcastData(int client_socket, const char* message)
+
     Game& game;
 };
 
