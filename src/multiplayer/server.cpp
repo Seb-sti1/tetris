@@ -3,6 +3,8 @@
 //
 
 #include "server.h"
+#include "player.h"
+#include "messages/messageable.h"
 #include <iostream>
 #include <cstring>
 #include <sys/socket.h>
@@ -79,6 +81,50 @@ bool Server::receiveData(int client_socket, char* buffer)
     // Receive data from the client
     size_t num_bytes = read(client_socket, buffer, sizeof(buffer));
     std::cout << "Received " << num_bytes << " bytes from client: " << buffer << "\n";
+
+    return num_bytes > 0;
+}
+
+bool Server::receiveMsg(int client_socket, char* buffer)
+{
+    // Receive data from the client
+    size_t num_bytes = read(client_socket, buffer, sizeof(buffer));
+    std::cout << "Received " << num_bytes << " bytes from client: " << buffer << "\n";
+
+    char msg_size_as_char[SIZE_OF_MESSAGE_SIZE];
+    strncpy(msg_size_as_char, buffer, SIZE_OF_MESSAGE_SIZE);
+
+    int msg_size = atoi(msg_size_as_char);
+    int msg_type = static_cast<messageType>((int)buffer[SIZE_OF_MESSAGE_SIZE+1]);
+
+//eType {GAME_START, PLAYER_DATA, NEW_PLAYER, DISCONNECT, GET_PLAYER_DATA, UNKNOWN};
+
+    switch (msg_type)
+    {
+    case GAME_START:
+        
+        /* code */
+        break;
+    case PLAYER_DATA:
+        Player new_player(client_socket);
+        new_player.deserialize(msg_size, buffer[SIZE_OF_MESSAGE_SIZE+2]);
+        break;
+    case NEW_PLAYER:
+        Player new_player(client_socket);
+        new_player.deserialize(msg_size, buffer[SIZE_OF_MESSAGE_SIZE+2]);
+        break;
+    case DISCONNECT:
+        break;
+    case GET_PLAYER_DATA:
+        
+        break;
+    case UNKNOWN:
+        /* code */
+        break;
+    default:
+        break;
+    }
+
 
     return num_bytes > 0;
 }

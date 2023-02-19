@@ -53,10 +53,12 @@ private:
      */
     bool sendData(int client_socket, const char* message);
 
+    bool Server::receiveMsg(int client_socket, char* buffer);
+
     bool receiveData(int client_socket, char* buffer);
 
     // Broadcasts data to all client sockets except client_socket
-    bool broadcastData(int client_socket, const char* message)
+    bool broadcastData(int client_socket, const char* message);
 
     Game& game;
 };
