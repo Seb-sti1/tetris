@@ -11,12 +11,15 @@
 
 class Client {
 
-public:
+public:// TODO generify with server.h
+
     explicit Client(char ip[], char name[]);
 
     ~Client();
 
     void terminate() const;
+
+    bool sendData(std::vector<char> &data);
 
 private:
     int client_socket;

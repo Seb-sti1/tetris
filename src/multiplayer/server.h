@@ -12,7 +12,7 @@
 
 class Server {
 
-public:
+public: // TODO generify with client.h
     /**
      * Start a socket at 127.0.0.1:2001
      */
@@ -53,12 +53,12 @@ private:
      */
     bool sendData(int client_socket, const char* message);
 
-    bool Server::receiveMsg(int client_socket, char* buffer);
+    bool receiveMsg(int client_socket);
 
-    bool receiveData(int client_socket, char* buffer);
+    bool receiveData(int client_socket, std::vector<char> &buffer);
 
     // Broadcasts data to all client sockets except client_socket
-    bool broadcastData(int client_socket, const char* message);
+    bool broadcastData(const char* message, int client_socket = -1);
 
     Game& game;
 };

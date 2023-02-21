@@ -30,14 +30,29 @@ Client::Client(char ip[], char name[]) : self(client_socket) {
 
     self.setName(name);
 
-    char *c = self.toData();
-    // TODO sendData();
+    std::vector<char> data;
+    self.toData(data);
+
+    sendData(data);
 }
 
 Client::~Client() {
     terminate();
 }
 
-void Client::terminate() const {
+void Client::terminate() const
+{
     close(client_socket);
+}
+
+
+bool Client::sendData(std::vector<char> &data)
+{
+    // Send a response to the client
+    if (send(client_socket, data.data(), data.size(), 0) < 0) {
+        std::cerr << "Error sending message to client\n";
+        // TODO exception
+        return false;
+    }
+    return true;
 }

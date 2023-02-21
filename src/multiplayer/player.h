@@ -6,6 +6,7 @@
 #define TETRIS_PLAYER_H
 
 
+#include <string>
 #include "messages/messageable.h"
 
 class Player : public messageable {
@@ -13,15 +14,15 @@ class Player : public messageable {
 public:
     explicit Player(int& client_socket);
 
-    char* name;
+    std::string name;
 
     unsigned level;
     unsigned score;
     unsigned completedLines;
     bool alive;
 
-    int serialize(char* data) override;
-    void deserialize(int size, char* data) override;
+    void serialize(std::vector<char> &data) override;
+    void deserialize(std::vector<char> data) override;
     messageType getType() override;
 
     void setName(char *string);

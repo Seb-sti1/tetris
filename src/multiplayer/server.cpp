@@ -38,6 +38,7 @@ Server::Server(Game& g) : game(g) {
 
     std::cout << "Server listening on port 2001...\n";
 
+    acceptPlayer();
 
 }
 
@@ -66,38 +67,39 @@ int Server::acceptPlayer() {
 
     std::cout << "New client connected!\n";
 
-    if (game.state != WAITING)
-    {
+    //if (game.state != WAITING)
+    //{
 
-    }
+    receiveMsg(client_socket);
+    //}
 
     client_sockets.push_back(client_socket);
 
     return client_socket;
 }
 
-bool Server::receiveData(int client_socket, char* buffer)
+bool Server::receiveData(int client_socket, std::vector<char> &buffer)
 {
     // Receive data from the client
-    size_t num_bytes = read(client_socket, buffer, sizeof(buffer));
-    std::cout << "Received " << num_bytes << " bytes from client: " << buffer << "\n";
+    size_t num_bytes = recv(client_socket, buffer.data(), buffer.size(), 0);
+    std::cout << "Received " << num_bytes << " bytes from client\n";
 
     return num_bytes > 0;
 }
 
-bool Server::receiveMsg(int client_socket, char* buffer)
+bool Server::receiveMsg(int client_socket)
 {
-    // Receive data from the client
-    size_t num_bytes = read(client_socket, buffer, sizeof(buffer));
-    std::cout << "Received " << num_bytes << " bytes from client: " << buffer << "\n";
+    std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
+    receiveData(client_socket, msg_size_as_char);
 
-    char msg_size_as_char[SIZE_OF_MESSAGE_SIZE];
-    strncpy(msg_size_as_char, buffer, SIZE_OF_MESSAGE_SIZE);
+    std::vector<char> msg_type_as_char(1);
+    receiveData(client_socket, msg_type_as_char);
 
-    int msg_size = atoi(msg_size_as_char);
-    int msg_type = static_cast<messageType>((int)buffer[SIZE_OF_MESSAGE_SIZE+1]);
+    int msg_size = atoi(msg_size_as_char.data());
+    auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
 
-//eType {GAME_START, PLAYER_DATA, NEW_PLAYER, DISCONNECT, GET_PLAYER_DATA, UNKNOWN};
+    std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
+    receiveData(client_socket, buffer);
 
     switch (msg_type)
     {
@@ -105,13 +107,18 @@ bool Server::receiveMsg(int client_socket, char* buffer)
         
         /* code */
         break;
-    case PLAYER_DATA:
-        Player new_player(client_socket);
-        new_player.deserialize(msg_size, buffer[SIZE_OF_MESSAGE_SIZE+2]);
+    case PLAYER_DATA: {
+            auto new_player = Player(client_socket);
+            new_player.deserialize(buffer);
+
+            std::cout << new_player.name << std::endl;
+
+            return  true;
         break;
+    }
     case NEW_PLAYER:
-        Player new_player(client_socket);
-        new_player.deserialize(msg_size, buffer[SIZE_OF_MESSAGE_SIZE+2]);
+        //Player new_player(client_socket);
+        //new_player.deserialize(msg_size, &buffer[SIZE_OF_MESSAGE_SIZE+2]);
         break;
     case DISCONNECT:
         break;
@@ -121,18 +128,15 @@ bool Server::receiveMsg(int client_socket, char* buffer)
     case UNKNOWN:
         /* code */
         break;
-    default:
-        break;
     }
 
-
-    return num_bytes > 0;
+    return false;
 }
 
 bool Server::sendData(int client_socket, const char* message)
 {
     // Send a response to the client
-    if (write(client_socket, message, strlen(message)) < 0) {
+    if (send(client_socket, message, strlen(message), 0) < 0) {
         std::cerr << "Error sending message to client\n";
         // TODO exception
         return false;
@@ -140,11 +144,14 @@ bool Server::sendData(int client_socket, const char* message)
     return true;
 }
 
-bool Server::broadcastData(int client_socket = -1, const char* message)
+bool Server::broadcastData(const char* message, int client_socket)
 {
-    // Send message to every clients except client_socket if given as an argument
+    bool result = true;
+    // Send message to every client except client_socket if given as an argument
     for (int socket_idx=0; (socket_idx<client_sockets.size()) && (client_sockets[socket_idx]!=client_socket); socket_idx++)
     {
-        sendData(client_sockets[socket_idx], message);
+        result = result and sendData(client_sockets[socket_idx], message);
     }
+
+    return result;
 }

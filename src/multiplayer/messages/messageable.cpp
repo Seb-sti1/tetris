@@ -12,22 +12,20 @@ struct data {
 };
 
 
-char* messageable::toData() {
-    data* toSend = new data;
+void messageable::toData(std::vector<char> &data)
+{
+    serialize(data);
 
-    int size = SIZE_OF_MESSAGE_SIZE + 1 + serialize(toSend->content);
-
+    int size = data.size();
     for (int i = 0; i < SIZE_OF_MESSAGE_SIZE; i++)
     {
-        int c = size/pow(10, SIZE_OF_MESSAGE_SIZE - i);
-        toSend->size[i] = c + '0';
+        int c = size/pow(10, SIZE_OF_MESSAGE_SIZE - i - 1);
+        data[i] = c + '0';
 
-        size -= c*pow(10, SIZE_OF_MESSAGE_SIZE - i);
+        size -= c*pow(10, SIZE_OF_MESSAGE_SIZE - i - 1);
     }
 
-    toSend->type = getType();
-
-    return (char*) toSend;
+    data[4] = getType();
 }
 
 messageType messageable::getType() {
