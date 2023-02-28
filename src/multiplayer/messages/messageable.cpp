@@ -12,7 +12,7 @@ struct data {
 };
 
 
-void messageable::toData(std::vector<char> &data)
+void Messageable::toData(std::vector<char> &data)
 {
     serialize(data);
 
@@ -28,6 +28,6 @@ void messageable::toData(std::vector<char> &data)
     data[4] = getType();
 }
 
-messageType messageable::getType() {
+messageType Messageable::getType() {
     return UNKNOWN;
 }

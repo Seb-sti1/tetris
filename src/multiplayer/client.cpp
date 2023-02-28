@@ -3,8 +3,8 @@
 //
 
 #include "client.h"
+#include "messages/disconnect.h"
 #include <iostream>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
@@ -33,26 +33,65 @@ Client::Client(char ip[], char name[]) : self(client_socket) {
     std::vector<char> data;
     self.toData(data);
 
-    sendData(data);
+    com::sendData(client_socket, data);
+
+    receiveMsg(client_socket);
 }
 
 Client::~Client() {
-    terminate();
-}
-
-void Client::terminate() const
-{
     close(client_socket);
 }
 
 
-bool Client::sendData(std::vector<char> &data)
+bool Client::receiveMsg(int socket)
 {
-    // Send a response to the client
-    if (send(client_socket, data.data(), data.size(), 0) < 0) {
-        std::cerr << "Error sending message to client\n";
-        // TODO exception
-        return false;
+    std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
+    com::receiveData(socket, msg_size_as_char);
+
+    std::vector<char> msg_type_as_char(1);
+    com::receiveData(socket, msg_type_as_char);
+
+    int msg_size = atoi(msg_size_as_char.data());
+    auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
+
+    std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
+    com::receiveData(socket, buffer);
+
+    switch (msg_type)
+    {
+        case GAME_START:
+
+            /* code */
+            break;
+        case PLAYER_DATA: {
+            auto new_player = Player(socket);
+            new_player.deserialize(buffer);
+
+            std::cout << new_player.name << std::endl;
+
+            return true;
+            break;
+        }
+        case NEW_PLAYER:
+            //Player new_player(socket);
+            //new_player.deserialize(msg_size, &buffer[SIZE_OF_MESSAGE_SIZE+2]);
+            break;
+        case DISCONNECT: {
+            Disconnect packet{};
+            packet.deserialize(buffer);
+
+            std::cout << "Kill client " << packet.reason << std::endl;
+
+            return true;
+            break;
+        }
+        case GET_PLAYER_DATA:
+
+            break;
+        case UNKNOWN:
+            /* code */
+            break;
     }
-    return true;
+
+    return false;
 }

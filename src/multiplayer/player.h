@@ -9,10 +9,11 @@
 #include <string>
 #include "messages/messageable.h"
 
-class Player : public messageable {
+class Player : public Messageable {
 
 public:
     explicit Player(int& client_socket);
+    int& client_socket;
 
     std::string name;
 
@@ -26,11 +27,6 @@ public:
     messageType getType() override;
 
     void setName(char *string);
-
-private:
-    int& client_socket;
-
-
 };
 
 

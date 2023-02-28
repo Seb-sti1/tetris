@@ -3,15 +3,11 @@
 //
 
 #include "server.h"
-#include "player.h"
 #include "messages/messageable.h"
+#include "messages/disconnect.h"
 #include <iostream>
-#include <cstring>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-
-#define SIZE_PADDING_SIZE 5
 
 
 Server::Server(Game& g) : game(g) {
@@ -39,16 +35,12 @@ Server::Server(Game& g) : game(g) {
     std::cout << "Server listening on port 2001...\n";
 
     acceptPlayer();
-
+    // TODO thread accepting/receiving sockets
 }
 
 Server::~Server() {
-    terminate();
-}
-
-void Server::terminate() {
-    for (int client_socket : client_sockets)
-        close(client_socket);
+    for (const auto& client : clients)
+        close(client.client_socket);
 
     close(server_socket);
 }
@@ -67,90 +59,75 @@ int Server::acceptPlayer() {
 
     std::cout << "New client connected!\n";
 
-    //if (game.state != WAITING)
-    //{
+    if (game.state != WAITING)
+    {
+        receiveMsg(client_socket);
+    }
+    else
+    {
+        receiveMsg(client_socket); // TODO remove
 
-    receiveMsg(client_socket);
-    //}
+        Disconnect packet("La partie a déjà commencée !");
 
-    client_sockets.push_back(client_socket);
+        std::vector<char> data;
+        packet.toData(data);
+
+        com::sendData(client_socket, data);
+    }
 
     return client_socket;
 }
 
-bool Server::receiveData(int client_socket, std::vector<char> &buffer)
-{
-    // Receive data from the client
-    size_t num_bytes = recv(client_socket, buffer.data(), buffer.size(), 0);
-    std::cout << "Received " << num_bytes << " bytes from client\n";
-
-    return num_bytes > 0;
-}
-
-bool Server::receiveMsg(int client_socket)
+bool Server::receiveMsg(int socket)
 {
     std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
-    receiveData(client_socket, msg_size_as_char);
+    com::receiveData(socket, msg_size_as_char);
 
     std::vector<char> msg_type_as_char(1);
-    receiveData(client_socket, msg_type_as_char);
+    com::receiveData(socket, msg_type_as_char);
 
     int msg_size = atoi(msg_size_as_char.data());
     auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
 
     std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
-    receiveData(client_socket, buffer);
+    com::receiveData(socket, buffer);
 
     switch (msg_type)
     {
-    case GAME_START:
-        
-        /* code */
-        break;
-    case PLAYER_DATA: {
-            auto new_player = Player(client_socket);
+        case PLAYER_DATA: {
+            auto new_player = Player(socket);
             new_player.deserialize(buffer);
 
-            std::cout << new_player.name << std::endl;
+            std::cout << new_player.name << " send new information" << std::endl;
 
-            return  true;
-        break;
-    }
-    case NEW_PLAYER:
-        //Player new_player(client_socket);
-        //new_player.deserialize(msg_size, &buffer[SIZE_OF_MESSAGE_SIZE+2]);
-        break;
-    case DISCONNECT:
-        break;
-    case GET_PLAYER_DATA:
-        
-        break;
-    case UNKNOWN:
-        /* code */
-        break;
+            // TODO update player & broadcast
+            return true;
+        }
+        case NEW_PLAYER: {
+            auto new_player = Player(socket);
+            new_player.deserialize(buffer);
+
+            std::cout << new_player.name << " joined the game !" << std::endl;
+
+            clients.push_back(new_player);
+            // TODO broadcast
+            return true;
+        }
     }
 
     return false;
 }
 
-bool Server::sendData(int client_socket, const char* message)
-{
-    // Send a response to the client
-    if (send(client_socket, message, strlen(message), 0) < 0) {
-        std::cerr << "Error sending message to client\n";
-        // TODO exception
-        return false;
-    }
-    return true;
-}
-
-bool Server::broadcastData(const char* message, int client_socket)
+bool Server::broadcastData(std::vector<char>& message, int client_socket)
 {
     bool result = true;
+
     // Send message to every client except client_socket if given as an argument
-    for (int socket_idx=0; (socket_idx<client_sockets.size()) && (client_sockets[socket_idx]!=client_socket); socket_idx++)
+    for (auto & client : clients)
     {
-        result = result and sendData(client_sockets[socket_idx], message);
+        if (client_socket != client.client_socket) {
+            result = result and com::sendData(client.client_socket, message);
+        }
     }
 
     return result;

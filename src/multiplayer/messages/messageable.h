@@ -11,13 +11,15 @@ enum messageType {GAME_START, PLAYER_DATA, NEW_PLAYER, DISCONNECT, GET_PLAYER_DA
 
 #define SIZE_OF_MESSAGE_SIZE 4
 
-class messageable {
-
+class Messageable {
 public:
+    virtual messageType getType();
+
     void toData(std::vector<char> &data);
+
+private:
     virtual void serialize(std::vector<char> &data) = 0;
     virtual void deserialize(std::vector<char> data) = 0;
-    virtual messageType getType();
 };
 
 

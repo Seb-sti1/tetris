@@ -9,24 +9,21 @@
 #include <vector>
 #include <string>
 #include "../game.h"
+#include "player.h"
+#include "communicator.h"
 
 class Server {
 
-public: // TODO generify with client.h
+public:
     /**
      * Start a socket at 127.0.0.1:2001
      */
-    Server(Game& g);
+    explicit Server(Game& g);
 
     /**
      * Close all sockets
      */
     ~Server();
-
-    /**
-     * Close all sockets
-     */
-    void terminate();
 
 private:
     /**
@@ -37,7 +34,7 @@ private:
     /**
      * The list of connected clients
      */
-    std::vector<int> client_sockets;
+    std::vector<Player> clients;
 
     /**
      * Wait until client tries to connect and accept the connection
@@ -46,19 +43,19 @@ private:
     int acceptPlayer();
 
     /**
-     * Send data to a client socket
-     * @param client_socket the client socket
-     * @param message the data to send
-     * @return if the data was sent
+     * Receive a message from a socket
+     * @param socket the socket
+     * @return a message was successfully received
      */
-    bool sendData(int client_socket, const char* message);
+    bool receiveMsg(int socket);
 
-    bool receiveMsg(int client_socket);
-
-    bool receiveData(int client_socket, std::vector<char> &buffer);
-
-    // Broadcasts data to all client sockets except client_socket
-    bool broadcastData(const char* message, int client_socket = -1);
+    /**
+     * Broadcasts data to all client sockets except client_socket
+     * @param message
+     * @param client_socket
+     * @return
+     */
+    bool broadcastData(std::vector<char>& message, int client_socket = -1);
 
     Game& game;
 };

@@ -26,8 +26,6 @@ int main (int argc, char *argv[])
         auto c = Client("127.0.0.1", "Moi");
     }
 
-
-
     MainWindow w(g);
 
     //Shows the window and returns when it is closed.

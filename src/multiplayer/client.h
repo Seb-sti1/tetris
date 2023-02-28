@@ -8,21 +8,25 @@
 
 #include <string>
 #include "player.h"
+#include "communicator.h"
 
 class Client {
 
-public:// TODO generify with server.h
+public:
 
     explicit Client(char ip[], char name[]);
 
     ~Client();
 
-    void terminate() const;
-
-    bool sendData(std::vector<char> &data);
-
 private:
     int client_socket;
+
+    /**
+     * Receive a message from a socket
+     * @param socket the socket
+     * @return a message was successfully received
+     */
+    bool receiveMsg(int socket);
 
     Player self;
 
