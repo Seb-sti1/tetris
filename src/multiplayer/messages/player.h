@@ -1,5 +1,5 @@
 //
-// Created by seb on 15/02/23.
+// Created by seb & billy on 15/02/23.
 //
 
 #ifndef TETRIS_PLAYER_H
@@ -7,8 +7,8 @@
 
 
 #include <string>
-#include "messages/messageable.h"
-#include "../game.h"
+#include "messageable.h"
+#include "../../game.h"
 
 class Player : public Messageable {
 

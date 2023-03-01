@@ -1,5 +1,5 @@
 //
-// Created by seb on 15/02/23.
+// Created by seb & billy on 15/02/23.
 //
 
 #include "client.h"
@@ -25,7 +25,7 @@ void Client::connectToServer(char ip[], char name[])
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(2001);
     if (connect(client_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
-        std::cerr << "Failed to connectToServer to serverAddr" << std::endl;
+        std::cerr << "Failed to connect to serverAddr" << std::endl;
         // TODO exception
     }
 

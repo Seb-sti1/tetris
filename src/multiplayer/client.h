@@ -1,5 +1,5 @@
 //
-// Created by seb on 15/02/23.
+// Created by seb & billy on 15/02/23.
 //
 
 #ifndef TETRIS_CLIENT_H
@@ -7,7 +7,7 @@
 
 
 #include <string>
-#include "player.h"
+#include "messages/player.h"
 #include "communicator.h"
 #include "../game.h"
 
