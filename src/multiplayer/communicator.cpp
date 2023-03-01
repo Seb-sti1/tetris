@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <poll.h>
 #include "communicator.h"
 
 namespace com {
@@ -14,7 +15,6 @@ namespace com {
         return sendData(socket, data);
     }
 
-
     bool sendData(int socket, std::vector<char>& data)
     {
         // Send a response to the client
@@ -24,7 +24,16 @@ namespace com {
             return false;
         }
         return true;
-    };
+    }
+
+    bool dataPresent(int socket)
+    {
+        struct pollfd ufds{};
+        ufds.fd = socket;
+        ufds.events = POLLIN;
+
+        return poll(&ufds, 2, 1000) > 0;
+    }
 
     bool receiveData(int socket, std::vector<char>& buffer)
     {
@@ -33,5 +42,5 @@ namespace com {
         std::cout << "Received " << num_bytes << " bytes from client\n";
 
         return num_bytes > 0;
-    };
+    }
 }

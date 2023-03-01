@@ -10,7 +10,10 @@
 #include <unistd.h>
 
 
-Server::Server(Game& g) : game(g) {
+Server::Server(Game& g) : game(g) {}
+
+void Server::start()
+{
     sockaddr_in server_address{};
 
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -34,8 +37,11 @@ Server::Server(Game& g) : game(g) {
 
     std::cout << "Server listening on port 2001...\n";
 
-    acceptPlayer();
-    // TODO thread accepting/receiving sockets
+    acceptNewPlayerThread = std::thread(&Server::acceptPlayer, this);
+    acceptNewPlayerThread.detach();
+
+    receiveMsgThread = std::thread(&Server::receiveAllMsg, this);
+    receiveMsgThread.detach();
 }
 
 Server::~Server() {
@@ -45,7 +51,7 @@ Server::~Server() {
     close(server_socket);
 }
 
-int Server::acceptPlayer() {
+void Server::acceptPlayer() {
     int client_socket;
     sockaddr_in client_address{};
 
@@ -54,18 +60,19 @@ int Server::acceptPlayer() {
     if ((client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_size)) < 0) {
         std::cerr << "Error accepting connection\n";
         // TODO exception
-        return -1;
     }
 
-    std::cout << "New client connected!\n";
-
-    if (game.state != WAITING)
+    if (game.state == WAITING)
     {
-        receiveMsg(client_socket);
+        std::cout << "New client connected!\n";
+
+        auto p = new Player(client_socket);
+
+        clients.push_back(*p);
     }
     else
     {
-        receiveMsg(client_socket); // TODO remove
+        std::cout << "New client tried to connect but the game is already started!\n";
 
         Disconnect packet("La partie a déjà commencée !");
 
@@ -74,49 +81,42 @@ int Server::acceptPlayer() {
 
         com::sendData(client_socket, data);
     }
-
-    return client_socket;
 }
 
-bool Server::receiveMsg(int socket)
+void Server::receiveAllMsg()
 {
-    std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
-    com::receiveData(socket, msg_size_as_char);
-
-    std::vector<char> msg_type_as_char(1);
-    com::receiveData(socket, msg_type_as_char);
-
-    int msg_size = atoi(msg_size_as_char.data());
-    auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
-
-    std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
-    com::receiveData(socket, buffer);
-
-    switch (msg_type)
+    for (auto& client : clients)
     {
-        case PLAYER_DATA: {
-            auto new_player = Player(socket);
-            new_player.deserialize(buffer);
+        if (com::dataPresent(client.client_socket))
+        {
+            std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
+            com::receiveData(client.client_socket, msg_size_as_char);
 
-            std::cout << new_player.name << " send new information" << std::endl;
+            std::vector<char> msg_type_as_char(1);
+            com::receiveData(client.client_socket, msg_type_as_char);
 
-            // TODO update player & broadcast
-            return true;
-        }
-        case NEW_PLAYER: {
-            auto new_player = Player(socket);
-            new_player.deserialize(buffer);
+            int msg_size = atoi(msg_size_as_char.data());
+            auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
 
-            std::cout << new_player.name << " joined the game !" << std::endl;
+            std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
+            com::receiveData(client.client_socket, buffer);
 
-            clients.push_back(new_player);
-            // TODO broadcast
-            return true;
+            if (msg_type == PLAYER_DATA)
+            {
+                client.deserialize(buffer);
+
+                std::cout << client.name << " send new information" << std::endl;
+
+                // TODO broadcast
+            }
+            else
+            {
+                std::cout << client.name << " send a packet not useful for the server" << std::endl;
+            }
         }
     }
-
-    return false;
 }
+
 
 bool Server::broadcastData(std::vector<char>& message, int client_socket)
 {

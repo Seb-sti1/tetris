@@ -10,6 +10,8 @@ MainWindow::MainWindow(Game& g) :
         homeContainer(Gtk::ORIENTATION_VERTICAL),
         afterGameContainer(Gtk::ORIENTATION_VERTICAL),
         game(g),
+        server(g),
+        client(g),
         state(HOME),
         gameMatrix(game.matrix),
         previewMatrix(game.next_tetromino_matrix)
@@ -37,7 +39,7 @@ MainWindow::MainWindow(Game& g) :
 
     b_create_multi.set_label("Créer une partie multijoueur");
     b_create_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        std::cout << "Start multiplayer game" << std::endl;
+        changeToPage(SERVER_MULTI);
         return true;
     });
     homeContainer.add(b_create_multi);
@@ -69,7 +71,7 @@ MainWindow::MainWindow(Game& g) :
     });
     playingGrid.attach(gameQuit, 1, 2);
 
-    /* ======================= CREATE GAME PAGE =================== */
+    /* ======================= CREATE AFTER GAME PAGE =================== */
     afterGameContainer.add(congratulation);
 
     afterGameQuit.set_label("Quitter la partie");
@@ -83,6 +85,9 @@ MainWindow::MainWindow(Game& g) :
     afterGameUndertext.set_label("Tetris by Billy & Sébastien.");
     afterGameContainer.add(afterGameUndertext);
 
+    /* ======================= CREATE SERVER MULTIPLAYER PAGE =================== */
+
+    serverMultiplayerContainer.add(infoText);
 
     /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
     set_default_size(500, 500);
@@ -110,6 +115,16 @@ void MainWindow::changeToPage(Page p)
             break;
         case AFTER_GAME:
             add(afterGameContainer);
+            break;
+        case SERVER_MULTI:
+
+            // TODO add list of connected player in gui
+            // TODO ask for name (in pop up ?)
+            infoText.set_text("Le serveur multijoueur est ouvert !");
+            server.start();
+
+
+            add(serverMultiplayerContainer);
             break;
     }
 
@@ -168,7 +183,7 @@ bool MainWindow::update()
             {
                 changeToPage(AFTER_GAME);
 
-                std::string scores = "You completed " + std::to_string(game.completed_lines) + " line(s), scored " + std::to_string(game.score) + " point(s)\n and reached the level " + std::to_string(game.level);
+                std::string scores = "You completed " + std::to_string(game.completed_lines) + " line(server), scored " + std::to_string(game.score) + " point(server)\n and reached the level " + std::to_string(game.level);
 
                 congratulation.set_margin_top(50);
                 congratulation.set_markup("<span size='large'><b>The game is over!</b></span>\n\n\n"

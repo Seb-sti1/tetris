@@ -16,8 +16,10 @@
 #include <gtkmm/grid.h>
 #include "../game.h"
 #include "graphicmatrix.h"
+#include "../multiplayer/server.h"
+#include "../multiplayer/client.h"
 
-enum Page {HOME, GAME, AFTER_GAME};
+enum Page {HOME, GAME, AFTER_GAME, SERVER_MULTI};
 
 class MainWindow : public Gtk::Window {
 
@@ -33,6 +35,11 @@ private:
     Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
     Gtk::Label homeUndertext;
 
+    // server multiplayer page
+    Gtk::ButtonBox serverMultiplayerContainer;
+    Gtk::Label infoText;
+    Server server;
+    Client client;
 
     // game page
     Gtk::Grid playingGrid;

@@ -4,7 +4,6 @@
 
 #include <gtkmm/application.h>
 #include "ui/MainWindow.h"
-#include "multiplayer/server.h"
 #include "multiplayer/client.h"
 
 
@@ -19,11 +18,11 @@ int main (int argc, char *argv[])
 
     if(argc > 1)
     {
-        auto s = Server(g);
     }
     else
     {
-        auto c = Client(g, "127.0.0.1", "Moi");
+        auto c = Client(g);
+        c.connectToServer("127.0.0.1", "Moi");
     }
 
     MainWindow w(g);

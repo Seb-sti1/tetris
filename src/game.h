@@ -51,7 +51,7 @@ public:
     Game();
 
     /**
-     * Start the game. Will generate the first piece and
+     * start the game. Will generate the first piece and
      * start the game loop
      * @param seed the seed of the random piece generator
      */

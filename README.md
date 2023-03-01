@@ -18,12 +18,12 @@ The pieces generated will be the same for all the players.
 
 ## Functional Design
 
-* Start the game
+* start the game
 * Generate random pieces (in a way that would be easy to transmit on a network)
 * The game routine : the piece fall and the player control the movements
 * Remove the complete lines and add points to the score
 
-* Start a multiplayer game
+* start a multiplayer game
 * Retrieve the status of the game
 * The Server can send the random generator and start the game
 

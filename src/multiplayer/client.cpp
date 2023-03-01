@@ -9,7 +9,10 @@
 #include <unistd.h>
 
 
-Client::Client(Game &g, char ip[], char name[]) : game(g), self(client_socket) {
+Client::Client(Game& g) : game(g), self(client_socket) {}
+
+void Client::connectToServer(char ip[], char name[])
+{
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (client_socket == -1) {
@@ -21,8 +24,8 @@ Client::Client(Game &g, char ip[], char name[]) : game(g), self(client_socket) {
     serverAddr.sin_addr.s_addr = inet_addr(ip);  // loopback address for testing on same machine
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(2001);
-    if (connect(client_socket, (sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
-        std::cerr << "Failed to connect to serverAddr" << std::endl;
+    if (connect(client_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+        std::cerr << "Failed to connectToServer to serverAddr" << std::endl;
         // TODO exception
     }
 

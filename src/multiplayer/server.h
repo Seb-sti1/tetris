@@ -16,9 +16,14 @@ class Server {
 
 public:
     /**
-     * Start a socket at 127.0.0.1:2001
+     * start a socket at 127.0.0.1:2001
      */
     explicit Server(Game& g);
+
+    /**
+     * start the server
+     */
+    void start();
 
     /**
      * Close all sockets
@@ -37,17 +42,16 @@ private:
     std::vector<Player> clients;
 
     /**
-     * Wait until client tries to connect and accept the connection
+     * Wait until client tries to connectToServer and accept the connection
      * @return the client socket
      */
-    int acceptPlayer();
+    void acceptPlayer();
+
 
     /**
-     * Receive a message from a socket
-     * @param socket the socket
-     * @return a message was successfully received
+     * Try to read a message on every sockets
      */
-    bool receiveMsg(int socket);
+    void receiveAllMsg();
 
     /**
      * Broadcasts data to all client sockets except client_socket
@@ -58,6 +62,9 @@ private:
     bool broadcastData(std::vector<char>& message, int client_socket = -1);
 
     Game& game;
+
+    std::thread acceptNewPlayerThread;
+    std::thread receiveMsgThread;
 };
 
 

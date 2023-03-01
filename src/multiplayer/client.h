@@ -14,8 +14,9 @@
 class Client {
 
 public:
+    explicit Client(Game& g);
 
-    explicit Client(Game &g, char ip[], char name[]);
+    void connectToServer(char ip[], char name[]);
 
     ~Client();
 
