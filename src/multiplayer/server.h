@@ -70,7 +70,7 @@ private:
      * @param client_socket
      * @return
      */
-    bool broadcastData(std::vector<char>& message, int client_socket = -1);
+    bool broadcastData(Messageable& message, int client_socket = -1);
 
     Game& game;
 

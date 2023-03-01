@@ -19,7 +19,7 @@
 #include "../multiplayer/server.h"
 #include "../multiplayer/client.h"
 
-enum Page {HOME, GAME, AFTER_GAME, SERVER_MULTI};
+enum Page {HOME, GAME, AFTER_GAME, MULTI};
 
 class MainWindow : public Gtk::Window {
 

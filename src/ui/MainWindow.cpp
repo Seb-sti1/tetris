@@ -9,6 +9,7 @@
 MainWindow::MainWindow(Game& g) :
         homeContainer(Gtk::ORIENTATION_VERTICAL),
         afterGameContainer(Gtk::ORIENTATION_VERTICAL),
+        serverMultiplayerContainer(Gtk::ORIENTATION_VERTICAL),
         game(g),
         server(g),
         client(g),
@@ -32,14 +33,24 @@ MainWindow::MainWindow(Game& g) :
 
     b_join_multi.set_label("Rejoindre une partie multijoueur");
     b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        std::cout << "Join multiplayer game" << std::endl;
+        infoText.set_text("Vous êtes connecté à une partie multijoueur !");
+
+        // TODO get client & pseudo from pop up
+        client.connectToServer("127.0.0.1", "Moi");
+
+        changeToPage(MULTI);
         return true;
     });
     homeContainer.add(b_join_multi);
 
     b_create_multi.set_label("Créer une partie multijoueur");
     b_create_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        changeToPage(SERVER_MULTI);
+        infoText.set_text("Le serveur multijoueur est ouvert !");
+        serverMultiplayerContainer.add(startGame);
+
+        server.start();
+
+        changeToPage(MULTI);
         return true;
     });
     homeContainer.add(b_create_multi);
@@ -85,7 +96,7 @@ MainWindow::MainWindow(Game& g) :
     afterGameUndertext.set_label("Tetris by Billy & Sébastien.");
     afterGameContainer.add(afterGameUndertext);
 
-    /* ======================= CREATE SERVER MULTIPLAYER PAGE =================== */
+    /* ======================= CREATE MULTIPLAYER PAGE =================== */
 
     startGame.set_label("Lancer la partie");
     startGame.signal_button_release_event().connect([&](GdkEventButton*) {
@@ -100,7 +111,6 @@ MainWindow::MainWindow(Game& g) :
     // TODO add list of connected player in gui
     // TODO ask for name (in pop up)
     serverMultiplayerContainer.add(infoText);
-    serverMultiplayerContainer.add(startGame);
 
     /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
     set_default_size(500, 500);
@@ -129,11 +139,7 @@ void MainWindow::changeToPage(Page p)
         case AFTER_GAME:
             add(afterGameContainer);
             break;
-        case SERVER_MULTI:
-            infoText.set_text("Le serveur multijoueur est ouvert !");
-            server.start();
-
-
+        case MULTI:
             add(serverMultiplayerContainer);
             break;
     }
@@ -183,6 +189,12 @@ bool MainWindow::update()
         case WAITING:
             break;
         case IN_GAME:
+
+            if (state == MULTI)
+            {
+                changeToPage(GAME);
+            }
+
             score.set_text("Your score is " + std::to_string(game.score));
 
             queue_draw();
@@ -193,7 +205,7 @@ bool MainWindow::update()
             {
                 changeToPage(AFTER_GAME);
 
-                std::string scores = "You completed " + std::to_string(game.completed_lines) + " line(server), scored " + std::to_string(game.score) + " point(server)\n and reached the level " + std::to_string(game.level);
+                std::string scores = "You completed " + std::to_string(game.completed_lines) + " line(s), scored " + std::to_string(game.score) + " point(s)\n and reached the level " + std::to_string(game.level);
 
                 congratulation.set_margin_top(50);
                 congratulation.set_markup("<span size='large'><b>The game is over!</b></span>\n\n\n"

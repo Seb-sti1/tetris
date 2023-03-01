@@ -4,6 +4,7 @@
 
 #include "client.h"
 #include "messages/disconnect.h"
+#include "messages/gamestart.h"
 #include <iostream>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -42,9 +43,11 @@ Client::~Client() {
     close(client_socket);
 }
 
-
+// TODO run in thread
 bool Client::receiveMsg(int socket)
 {
+    while(!com::dataPresent(socket)) {}
+
     std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
     com::receiveData(socket, msg_size_as_char);
 
@@ -59,10 +62,13 @@ bool Client::receiveMsg(int socket)
 
     switch (msg_type)
     {
-        case GAME_START:
+        case GAME_START: {
+            auto gs = GameStart();
+            gs.deserialize(buffer);
 
-            /* code */
-            break;
+            game.startGame(gs.seed);
+            return true;
+        }
         case PLAYER_DATA: {
             auto new_player = Player(socket);
             new_player.deserialize(buffer);
@@ -71,10 +77,6 @@ bool Client::receiveMsg(int socket)
 
             return true;
         }
-        case NEW_PLAYER:
-            //Player new_player(socket);
-            //new_player.deserialize(msg_size, &buffer[SIZE_OF_MESSAGE_SIZE+2]);
-            break;
         case DISCONNECT: {
             Disconnect packet{};
             packet.deserialize(buffer);

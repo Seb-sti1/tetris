@@ -5,10 +5,15 @@
 #include "server.h"
 #include "messages/messageable.h"
 #include "messages/disconnect.h"
+#include "messages/gamestart.h"
 #include <iostream>
 #include <arpa/inet.h>
 #include <unistd.h>
 
+
+// TODO detect when a client disconnect (currently makes app crash)
+// TODO merge server/client ? (lot a of thing in common : thread, send/receive, player list...)
+// TODO deal with end of games
 
 Server::Server(Game& g) : game(g) {}
 
@@ -116,7 +121,7 @@ void Server::receiveAllMsg()
 
                     std::cout << client->name << " send new information" << std::endl;
 
-                    // TODO broadcast
+                    broadcastData(*client, client->client_socket); // TODO check if working
                 }
                 else
                 {
@@ -128,7 +133,7 @@ void Server::receiveAllMsg()
 }
 
 
-bool Server::broadcastData(std::vector<char>& message, int client_socket)
+bool Server::broadcastData(Messageable& msg, int client_socket)
 {
     bool result = true;
 
@@ -136,7 +141,7 @@ bool Server::broadcastData(std::vector<char>& message, int client_socket)
     for (auto client : clients)
     {
         if (client_socket != client->client_socket) {
-            result = result and com::sendData(client->client_socket, message);
+            result = result and com::sendMsg(client->client_socket, msg);
         }
     }
 
@@ -144,5 +149,7 @@ bool Server::broadcastData(std::vector<char>& message, int client_socket)
 }
 
 void Server::startGame(long seed) {
+    auto msg = GameStart(seed);
 
+    broadcastData(msg);
 }

@@ -25,6 +25,6 @@ void GameStart::deserialize(std::vector<char> data) {
 }
 
 messageType GameStart::getType() {
-    return Messageable::getType();
+    return GAME_START;
 }
 

@@ -14,6 +14,8 @@ namespace com {
 
     /**
      * @deprecated use sendMsg instead
+     *
+     * TODO stop using it
      */
     bool sendData(int socket, std::vector<char>& data);
 

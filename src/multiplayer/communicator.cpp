@@ -39,7 +39,7 @@ namespace com {
     {
         // Receive data from the client
         size_t num_bytes = recv(socket, buffer.data(), buffer.size(), 0);
-        std::cout << "Received " << num_bytes << " bytes from client\n";
+        std::cout << "Received " << num_bytes << " bytes\n";
 
         return num_bytes > 0;
     }

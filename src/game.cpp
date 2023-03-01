@@ -220,7 +220,6 @@ void Game::gameLoop()
 
             // If there is any move + collision check
             orient direction = getKeyPress();
-            // TODO rotation
 
             // move the piece
             auto new_current_tetromino(current_tetromino);
@@ -228,7 +227,7 @@ void Game::gameLoop()
             switch (direction) {
                 case UP:
                     // TODO verify that the next line properly works (spoiler it doesn't and its behaviour has to be corriged)
-                    new_current_tetromino.orientation = static_cast<orient>((new_current_tetromino.orientation+1)%7); // 7 tetromino types
+                    new_current_tetromino.orientation = static_cast<orient>((new_current_tetromino.orientation + 1) % 7); // 7 tetromino types
                     break;
                 case RIGHT:
                     new_current_tetromino.y++;
