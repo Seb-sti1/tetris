@@ -6,6 +6,15 @@
 #include "communicator.h"
 
 namespace com {
+    bool sendMsg(int socket, Messageable& msg)
+    {
+        std::vector<char> data;
+        msg.toData(data);
+
+        return sendData(socket, data);
+    }
+
+
     bool sendData(int socket, std::vector<char>& data)
     {
         // Send a response to the client

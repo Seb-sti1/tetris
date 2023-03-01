@@ -8,18 +8,19 @@
 
 #include <string>
 #include "messages/messageable.h"
+#include "../game.h"
 
 class Player : public Messageable {
 
 public:
-    explicit Player(int& client_socket);
+    explicit Player(int &socket);
     int& client_socket;
 
     std::string name;
 
     unsigned level;
     unsigned score;
-    unsigned completedLines;
+    unsigned completed_lines;
     bool alive;
 
     void serialize(std::vector<char> &data) override;
@@ -27,6 +28,8 @@ public:
     messageType getType() override;
 
     void setName(char *string);
+
+    void update(Game& g);
 };
 
 

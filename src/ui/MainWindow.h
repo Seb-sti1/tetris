@@ -33,6 +33,7 @@ private:
     Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
     Gtk::Label homeUndertext;
 
+
     // game page
     Gtk::Grid playingGrid;
     GraphicMatrix gameMatrix;

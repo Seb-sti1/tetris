@@ -5,7 +5,6 @@
 #include "MainWindow.h"
 #include <iostream>
 #include <glibmm/main.h>
-#include "../tetromino.h"
 
 MainWindow::MainWindow(Game& g) :
         homeContainer(Gtk::ORIENTATION_VERTICAL),

@@ -7,8 +7,11 @@
 
 #include <sys/socket.h>
 #include <iostream>
+#include "messages/messageable.h"
 
 namespace com {
+    bool sendMsg(int socket, Messageable& msg);
+
     bool sendData(int socket, std::vector<char>& data);
 
     bool receiveData(int socket, std::vector<char>& buffer);

@@ -9,12 +9,13 @@
 #include <string>
 #include "player.h"
 #include "communicator.h"
+#include "../game.h"
 
 class Client {
 
 public:
 
-    explicit Client(char ip[], char name[]);
+    explicit Client(Game &g, char ip[], char name[]);
 
     ~Client();
 
@@ -30,6 +31,7 @@ private:
 
     Player self;
 
+    Game &game;
 };
 
 

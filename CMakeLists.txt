@@ -19,6 +19,7 @@ add_executable(tetris src/main.cpp
         src/multiplayer/server.cpp src/multiplayer/server.h
         src/multiplayer/player.cpp src/multiplayer/player.h
         src/multiplayer/client.cpp src/multiplayer/client.h
+        src/multiplayer/messages/getplayerdata.cpp src/multiplayer/messages/getplayerdata.h
         src/multiplayer/messages/disconnect.cpp src/multiplayer/messages/disconnect.h
         src/multiplayer/messages/messageable.cpp src/multiplayer/messages/messageable.h
         src/multiplayer/communicator.cpp src/multiplayer/communicator.h)

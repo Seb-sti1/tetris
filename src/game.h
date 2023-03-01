@@ -126,7 +126,7 @@ private:
      */
     double getPieceFallDelay() const;
     /**
-     * Calculate the score to add when completing completedLines
+     * Calculate the score to add when completing completed_lines
      * @param completedLines the number of lines just completed
      * @return the score to add
      */

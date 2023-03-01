@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 
-Client::Client(char ip[], char name[]) : self(client_socket) {
+Client::Client(Game &g, char ip[], char name[]) : game(g), self(client_socket) {
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (client_socket == -1) {
@@ -30,10 +30,7 @@ Client::Client(char ip[], char name[]) : self(client_socket) {
 
     self.setName(name);
 
-    std::vector<char> data;
-    self.toData(data);
-
-    com::sendData(client_socket, data);
+    com::sendMsg(client_socket, self);
 
     receiveMsg(client_socket);
 }
@@ -70,7 +67,6 @@ bool Client::receiveMsg(int socket)
             std::cout << new_player.name << std::endl;
 
             return true;
-            break;
         }
         case NEW_PLAYER:
             //Player new_player(socket);
@@ -80,14 +76,15 @@ bool Client::receiveMsg(int socket)
             Disconnect packet{};
             packet.deserialize(buffer);
 
-            std::cout << "Kill client " << packet.reason << std::endl;
+            std::cout << "Kill client : " << packet.reason << std::endl;
 
             return true;
-            break;
         }
         case GET_PLAYER_DATA:
+            self.update(game);
+            com::sendMsg(client_socket, self);
 
-            break;
+            return true;
         case UNKNOWN:
             /* code */
             break;

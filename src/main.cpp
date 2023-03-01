@@ -23,7 +23,7 @@ int main (int argc, char *argv[])
     }
     else
     {
-        auto c = Client("127.0.0.1", "Moi");
+        auto c = Client(g, "127.0.0.1", "Moi");
     }
 
     MainWindow w(g);

@@ -7,25 +7,25 @@
 struct player {
     unsigned level;
     unsigned score;
-    unsigned completedLines;
+    unsigned completed_lines;
     bool alive;
     char name[];
 };
 
 
-Player::Player(int& client_socket) : client_socket(client_socket),
-level(0), score(0), completedLines(0), alive(true) {}
+Player::Player(int &socket) : client_socket(socket),
+                              level(0), score(0), completed_lines(0), alive(true) {}
 
 void Player::serialize(std::vector<char> &data)
 {
     data.resize(SIZE_OF_MESSAGE_SIZE + 1 + (name.size() + 1) +
-                 + sizeof(level) + sizeof(score) + sizeof(completedLines) + sizeof(alive));
+                + sizeof(level) + sizeof(score) + sizeof(completed_lines) + sizeof(alive));
 
     auto* p = reinterpret_cast<player *>(data.data() + SIZE_OF_MESSAGE_SIZE + 1);
 
-    p->level = 1;
-    p->score = 2;
-    p->completedLines = 3;
+    p->level = level;
+    p->score = score;
+    p->completed_lines = completed_lines;
     p->alive = alive;
     for (int i = 0; i < name.size(); i++)
         p->name[i] = name[i];
@@ -38,7 +38,7 @@ void Player::deserialize(std::vector<char> data)
 
     level = p->level;
     score = p->score;
-    completedLines = p->completedLines;
+    completed_lines = p->completed_lines;
     alive = p->alive;
     name = p->name;
 }
@@ -49,6 +49,14 @@ messageType Player::getType() {
 
 void Player::setName(char* n) {
     name = n;
+}
+
+void Player::update(Game &g) {
+    level = g.level;
+    score = g.score;
+    completed_lines = g.completed_lines;
+    alive = g.state == IN_GAME;
+
 }
 
 
