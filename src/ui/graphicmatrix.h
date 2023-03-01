@@ -1,5 +1,5 @@
 //
-// Created by seb on 13/12/22.
+// Created by seb & billy on 13/12/22.
 //
 
 #ifndef TETRIS_GRAPHICMATRIX_H

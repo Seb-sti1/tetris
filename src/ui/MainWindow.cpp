@@ -1,5 +1,5 @@
 //
-// Created by seb on 13/12/22.
+// Created by seb & billy on 13/12/22.
 //
 
 #include "MainWindow.h"
@@ -87,7 +87,20 @@ MainWindow::MainWindow(Game& g) :
 
     /* ======================= CREATE SERVER MULTIPLAYER PAGE =================== */
 
+    startGame.set_label("Lancer la partie");
+    startGame.signal_button_release_event().connect([&](GdkEventButton*) {
+        long date = std::time(nullptr);
+
+        server.startGame(date);
+
+        game.startGame(date);
+        return true;
+    });
+
+    // TODO add list of connected player in gui
+    // TODO ask for name (in pop up)
     serverMultiplayerContainer.add(infoText);
+    serverMultiplayerContainer.add(startGame);
 
     /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
     set_default_size(500, 500);
@@ -117,9 +130,6 @@ void MainWindow::changeToPage(Page p)
             add(afterGameContainer);
             break;
         case SERVER_MULTI:
-
-            // TODO add list of connected player in gui
-            // TODO ask for name (in pop up ?)
             infoText.set_text("Le serveur multijoueur est ouvert !");
             server.start();
 

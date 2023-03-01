@@ -1,5 +1,5 @@
 //
-// Created by seb on 06/12/22.
+// Created by seb & billy on 06/12/22.
 //
 
 #include <gtkmm/application.h>

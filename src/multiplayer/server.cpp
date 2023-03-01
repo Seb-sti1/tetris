@@ -1,5 +1,5 @@
 //
-// Created by seb on 15/02/23.
+// Created by seb & billy on 15/02/23.
 //
 
 #include "server.h"
@@ -14,6 +14,8 @@ Server::Server(Game& g) : game(g) {}
 
 void Server::start()
 {
+    running = true;
+
     sockaddr_in server_address{};
 
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -44,74 +46,82 @@ void Server::start()
     receiveMsgThread.detach();
 }
 
+void Server::stop()
+{
+    running = false;
+}
+
 Server::~Server() {
-    for (const auto& client : clients)
-        close(client.client_socket);
+    for (auto client : clients)
+        close(client->client_socket);
 
     close(server_socket);
 }
 
 void Server::acceptPlayer() {
-    int client_socket;
-    sockaddr_in client_address{};
-
-    // Accept incoming connections
-    socklen_t client_address_size = sizeof(client_address);
-    if ((client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_size)) < 0) {
-        std::cerr << "Error accepting connection\n";
-        // TODO exception
-    }
-
-    if (game.state == WAITING)
+    while (running)
     {
-        std::cout << "New client connected!\n";
+        int client_socket;
+        sockaddr_in client_address{};
 
-        auto p = new Player(client_socket);
+        // Accept incoming connections
+        socklen_t client_address_size = sizeof(client_address);
+        if ((client_socket = accept(server_socket, (struct sockaddr *) &client_address, &client_address_size)) < 0) {
+            std::cerr << "Error accepting connection\n";
+            // TODO exception
+        }
 
-        clients.push_back(*p);
-    }
-    else
-    {
-        std::cout << "New client tried to connect but the game is already started!\n";
+        if (game.state == WAITING) {
+            std::cout << "New client connected!\n";
 
-        Disconnect packet("La partie a déjà commencée !");
+            auto p = new Player(client_socket);
 
-        std::vector<char> data;
-        packet.toData(data);
+            clients.push_back(p);
+        } else {
+            std::cout << "New client tried to connect but the game is already started!\n";
 
-        com::sendData(client_socket, data);
+            Disconnect packet("La partie a déjà commencée !");
+
+            std::vector<char> data;
+            packet.toData(data);
+
+            com::sendData(client_socket, data);
+        }
     }
 }
 
 void Server::receiveAllMsg()
 {
-    for (auto& client : clients)
+    while (running)
     {
-        if (com::dataPresent(client.client_socket))
+        for (auto client : clients)
         {
-            std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
-            com::receiveData(client.client_socket, msg_size_as_char);
-
-            std::vector<char> msg_type_as_char(1);
-            com::receiveData(client.client_socket, msg_type_as_char);
-
-            int msg_size = atoi(msg_size_as_char.data());
-            auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
-
-            std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
-            com::receiveData(client.client_socket, buffer);
-
-            if (msg_type == PLAYER_DATA)
+            if (com::dataPresent(client->client_socket))
             {
-                client.deserialize(buffer);
+                std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
+                com::receiveData(client->client_socket, msg_size_as_char);
 
-                std::cout << client.name << " send new information" << std::endl;
+                std::vector<char> msg_type_as_char(1);
+                com::receiveData(client->client_socket, msg_type_as_char);
 
-                // TODO broadcast
-            }
-            else
-            {
-                std::cout << client.name << " send a packet not useful for the server" << std::endl;
+                int msg_size = atoi(msg_size_as_char.data());
+                auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
+
+                std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
+                com::receiveData(client->client_socket, buffer);
+
+                if (msg_type == PLAYER_DATA)
+                {
+                    client->deserialize(buffer);
+
+                    std::cout << client->name << " send new information" << std::endl;
+
+                    // TODO broadcast
+                }
+                else
+                {
+                    std::cout << client->name << " send a packet not useful for the server" << std::endl;
+                }
             }
         }
     }
@@ -123,12 +133,16 @@ bool Server::broadcastData(std::vector<char>& message, int client_socket)
     bool result = true;
 
     // Send message to every client except client_socket if given as an argument
-    for (auto & client : clients)
+    for (auto client : clients)
     {
-        if (client_socket != client.client_socket) {
-            result = result and com::sendData(client.client_socket, message);
+        if (client_socket != client->client_socket) {
+            result = result and com::sendData(client->client_socket, message);
         }
     }
 
     return result;
+}
+
+void Server::startGame(long seed) {
+
 }

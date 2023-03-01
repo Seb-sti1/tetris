@@ -1,5 +1,5 @@
 //
-// Created by seb on 15/02/23.
+// Created by seb & billy on 15/02/23.
 //
 
 #ifndef TETRIS_SERVER_H
@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include "../game.h"
-#include "player.h"
+#include "messages/player.h"
 #include "communicator.h"
 
 class Server {
@@ -26,9 +26,20 @@ public:
     void start();
 
     /**
+     * stop the server
+     */
+     void stop();
+
+    /**
      * Close all sockets
      */
     ~Server();
+
+    /**
+     * Send a game start packet
+     * @param seed
+     */
+    void startGame(long seed);
 
 private:
     /**
@@ -39,10 +50,10 @@ private:
     /**
      * The list of connected clients
      */
-    std::vector<Player> clients;
+    std::vector<Player*> clients;
 
     /**
-     * Wait until client tries to connectToServer and accept the connection
+     * Wait until client tries to connect and accept the connection
      * @return the client socket
      */
     void acceptPlayer();
@@ -65,6 +76,8 @@ private:
 
     std::thread acceptNewPlayerThread;
     std::thread receiveMsgThread;
+
+    bool running;
 };
 
 

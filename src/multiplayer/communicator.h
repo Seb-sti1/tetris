@@ -1,5 +1,5 @@
 //
-// Created by seb on 28/02/23.
+// Created by seb & billy on 28/02/23.
 //
 
 #ifndef TETRIS_COMMUNICATOR_H

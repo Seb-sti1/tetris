@@ -1,5 +1,5 @@
 //
-// Created by seb on 01/03/23.
+// Created by seb & billy on 01/03/23.
 //
 
 #include "getplayerdata.h"

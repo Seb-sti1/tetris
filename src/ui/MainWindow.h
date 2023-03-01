@@ -1,5 +1,5 @@
 //
-// Created by seb on 13/12/22.
+// Created by seb & billy on 13/12/22.
 //
 
 #ifndef TETRIS_MAINWINDOW_H
@@ -35,9 +35,10 @@ private:
     Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
     Gtk::Label homeUndertext;
 
-    // server multiplayer page
+    // Multiplayer page
     Gtk::ButtonBox serverMultiplayerContainer;
     Gtk::Label infoText;
+    Gtk::Button startGame;
     Server server;
     Client client;
 

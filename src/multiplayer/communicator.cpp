@@ -1,5 +1,5 @@
 //
-// Created by seb on 01/03/23.
+// Created by seb & billy on 01/03/23.
 //
 
 #include <vector>
@@ -28,11 +28,11 @@ namespace com {
 
     bool dataPresent(int socket)
     {
-        struct pollfd ufds{};
-        ufds.fd = socket;
-        ufds.events = POLLIN;
+        auto ufds = new pollfd;
+        ufds->fd = socket;
+        ufds->events = POLLIN;
 
-        return poll(&ufds, 2, 1000) > 0;
+        return poll(ufds, 2, 1000) > 0;
     }
 
     bool receiveData(int socket, std::vector<char>& buffer)
