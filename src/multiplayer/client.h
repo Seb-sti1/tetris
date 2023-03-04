@@ -21,7 +21,15 @@ public:
     ~Client();
 
 private:
+    /**
+     * the socket of the client to communicate with the server
+     */
     int client_socket;
+
+    /**
+     * The list of connected clients
+     */
+    std::vector<Player*> clients;
 
     /**
      * Receive a message from a socket
@@ -29,9 +37,20 @@ private:
      * @return a message was successfully received
      */
     bool receiveMsg(int socket);
+    
+    /**
+     * The thread to receive message from clients
+     */
+    std::thread receiveMsgThread;
 
+    /**
+     * The player object of the client
+     */
     Player self;
 
+    /**
+     * The game ref
+     */
     Game &game;
 };
 

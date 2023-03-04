@@ -72,12 +72,30 @@ private:
      */
     bool broadcastData(Messageable& message, int client_socket = -1);
 
-    Game& game;
-
+    /**
+     * The thread to accept players continuously
+     */
     std::thread acceptNewPlayerThread;
+
+    /**
+     * The thread to receive message from clients
+     */
     std::thread receiveMsgThread;
 
+    /**
+     * If the server should continue accepting new client or receiving new message
+     */
     bool running;
+
+    /**
+     * The player object of the client
+     */
+    Player self;
+
+    /**
+     * The game ref
+     */
+    Game& game;
 };
 
 

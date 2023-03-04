@@ -15,7 +15,7 @@
 // TODO merge server/client ? (lot a of thing in common : thread, send/receive, player list...)
 // TODO deal with end of games
 
-Server::Server(Game& g) : game(g) {}
+Server::Server(Game& g) : game(g), self(server_socket) {}
 
 void Server::start()
 {
@@ -54,13 +54,15 @@ void Server::start()
 void Server::stop()
 {
     running = false;
-}
 
-Server::~Server() {
     for (auto client : clients)
         close(client->client_socket);
 
     close(server_socket);
+}
+
+Server::~Server() {
+    stop();
 }
 
 void Server::acceptPlayer() {

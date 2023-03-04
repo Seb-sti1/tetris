@@ -70,10 +70,28 @@ bool Client::receiveMsg(int socket)
             return true;
         }
         case PLAYER_DATA: {
-            auto new_player = Player(socket);
-            new_player.deserialize(buffer);
+            auto new_player = new Player(socket);
+            new_player->deserialize(buffer);
 
-            std::cout << new_player.name << std::endl;
+            bool found = false;
+
+            for (auto client : clients)
+            {
+                if (client->name == new_player->name)
+                {
+                    std::cout << "Updating " << new_player.name << std::endl;
+
+                    client->update(new_player);
+
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found && self.name != new_player->name)
+            {
+                clients.push_back(new_player);
+            }
 
             return true;
         }
@@ -81,7 +99,9 @@ bool Client::receiveMsg(int socket)
             Disconnect packet{};
             packet.deserialize(buffer);
 
-            std::cout << "Kill client : " << packet.reason << std::endl;
+            std::cout << "The server has stopped : " << packet.reason << std::endl;
+
+            // TODO show message & quit game
 
             return true;
         }
@@ -90,9 +110,6 @@ bool Client::receiveMsg(int socket)
             com::sendMsg(client_socket, self);
 
             return true;
-        case UNKNOWN:
-            /* code */
-            break;
     }
 
     return false;

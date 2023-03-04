@@ -59,5 +59,12 @@ void Player::update(Game &g) {
 
 }
 
+void Player::update(Player *p) {
+    level = p->level;
+    score = p->score;
+    completed_lines = p->completed_lines;
+    alive = p->alive;
+}
+
 
 

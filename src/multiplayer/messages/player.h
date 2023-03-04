@@ -30,6 +30,7 @@ public:
     void setName(char *string);
 
     void update(Game& g);
+    void update(Player* p);
 };
 
 
