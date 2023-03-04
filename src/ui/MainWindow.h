@@ -21,6 +21,9 @@
 
 enum Page {HOME, GAME, AFTER_GAME, MULTI};
 
+// TODO create a graphic scoreboard
+// TODO add graphic scoreboard to game if isMulti
+
 class MainWindow : public Gtk::Window {
 
 public:
@@ -39,6 +42,8 @@ private:
     Gtk::ButtonBox serverMultiplayerContainer;
     Gtk::Label infoText;
     Gtk::Button startGame;
+    bool isMulti = false;
+    bool isServer = false;
     Server server;
     Client client;
 

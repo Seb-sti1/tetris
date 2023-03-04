@@ -33,8 +33,6 @@ MainWindow::MainWindow(Game& g) :
 
     b_join_multi.set_label("Rejoindre une partie multijoueur");
     b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        infoText.set_text("Vous êtes connecté à une partie multijoueur !");
-
         // TODO get client & pseudo from pop up
         client.connectToServer("127.0.0.1", "Moi");
 
@@ -45,7 +43,9 @@ MainWindow::MainWindow(Game& g) :
 
     b_create_multi.set_label("Créer une partie multijoueur");
     b_create_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        infoText.set_text("Le serveur multijoueur est ouvert !");
+        // TODO ask for name (in pop up)
+
+        isServer = true;
         serverMultiplayerContainer.add(startGame);
 
         server.start();
@@ -108,8 +108,6 @@ MainWindow::MainWindow(Game& g) :
         return true;
     });
 
-    // TODO add list of connected player in gui
-    // TODO ask for name (in pop up)
     serverMultiplayerContainer.add(infoText);
 
     /* ======================== OPTIONS OF THE MAIN WINDOW ============== */
@@ -187,6 +185,33 @@ bool MainWindow::update()
 {
     switch (game.state) {
         case WAITING:
+            if (state == MULTI)
+            {
+                std::vector<Player*> players = (isServer) ? server.clients : client.clients;
+
+                std::string baseText = (isServer) ? "Le serveur multijoueur est ouvert !\n" : "Vous êtes connecté à une partie multijoueur !\n";
+
+                if (!players.empty())
+                {
+                    baseText += "Joueurs connectés : ";
+
+                    for (auto player : players)
+                    {
+                        baseText += player->name + ", ";
+                    }
+
+                    baseText += (isServer) ? server.self.name : client.self.name;
+
+                    baseText += "(Vous).";
+                }
+                else
+                {
+                    baseText += "Aucun joueur connecté.";
+                }
+
+
+                infoText.set_text(baseText);
+            }
             break;
         case IN_GAME:
 

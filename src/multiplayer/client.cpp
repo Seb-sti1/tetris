@@ -79,7 +79,7 @@ bool Client::receiveMsg(int socket)
             {
                 if (client->name == new_player->name)
                 {
-                    std::cout << "Updating " << new_player.name << std::endl;
+                    std::cout << "Updating " << new_player->name << std::endl;
 
                     client->update(new_player);
 
@@ -90,6 +90,7 @@ bool Client::receiveMsg(int socket)
 
             if (!found && self.name != new_player->name)
             {
+                std::cout << "New player " << new_player->name << std::endl;
                 clients.push_back(new_player);
             }
 

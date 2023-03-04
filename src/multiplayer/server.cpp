@@ -84,10 +84,12 @@ void Server::acceptPlayer() {
             auto p = new Player(client_socket);
 
             clients.push_back(p);
+
+            com::sendMsg(p->client_socket, self);
         } else {
             std::cout << "New client tried to connect but the game is already started!\n";
 
-            Disconnect packet("La partie a déjà commencée !");
+            Disconnect packet("La partie a déjà commencé !");
 
             std::vector<char> data;
             packet.toData(data);

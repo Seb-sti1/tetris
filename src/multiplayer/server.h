@@ -41,16 +41,21 @@ public:
      */
     void startGame(long seed);
 
+    /**
+     * The list of connected clients
+     */
+    std::vector<Player*> clients;
+
+    /**
+     * The player object of the client
+     */
+    Player self;
+
 private:
     /**
      * The server socket
      */
     int server_socket;
-
-    /**
-     * The list of connected clients
-     */
-    std::vector<Player*> clients;
 
     /**
      * Wait until client tries to connect and accept the connection
@@ -86,11 +91,6 @@ private:
      * If the server should continue accepting new client or receiving new message
      */
     bool running;
-
-    /**
-     * The player object of the client
-     */
-    Player self;
 
     /**
      * The game ref
