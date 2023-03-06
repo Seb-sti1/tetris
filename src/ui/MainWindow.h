@@ -16,10 +16,11 @@
 #include <gtkmm/grid.h>
 #include "../game.h"
 #include "graphicmatrix.h"
+#include "leaderboard.h"
 #include "../multiplayer/server.h"
 #include "../multiplayer/client.h"
 
-enum Page {HOME, GAME, AFTER_GAME, MULTI};
+enum Page {HOME, GAME, AFTER_GAME, MULTI, MULTI_AFTER_GAME};
 
 // TODO create a graphic scoreboard
 // TODO add graphic scoreboard to game if isMulti
@@ -33,12 +34,25 @@ private:
     Game& game;
     Page state;
 
-    // main page
+    // HOME page
     Gtk::ButtonBox homeContainer;
     Gtk::Button b_start, b_join_multi, b_create_multi, b_help;
     Gtk::Label homeUndertext;
 
-    // Multiplayer page
+    // GAME page
+    Gtk::Grid playingGrid;
+    GraphicMatrix gameMatrix;
+    Gtk::Label score;
+    Gtk::Button gameQuit;
+    GraphicMatrix previewMatrix;
+
+    // AFTER_GAME page
+    Gtk::ButtonBox afterGameContainer;
+    Gtk::Label congratulation;
+    Gtk::Button afterGameQuit;
+    Gtk::Label afterGameUndertext;
+
+    // MULTI page
     Gtk::ButtonBox serverMultiplayerContainer;
     Gtk::Label infoText;
     Gtk::Button startGame;
@@ -47,22 +61,24 @@ private:
     Server server;
     Client client;
 
-    // game page
-    Gtk::Grid playingGrid;
-    GraphicMatrix gameMatrix;
-    Gtk::Label score;
-    Gtk::Button gameQuit;
-    GraphicMatrix previewMatrix;
+    // MULTI_AFTER_GAME page
+    Gtk::Grid multiAfterGameGrid;
+    Leaderboard leaderboard;
+    Gtk::Label paratext;
+    Gtk::Button multiAfterGameQuit;
 
-    // after game page
-    Gtk::ButtonBox afterGameContainer;
-    Gtk::Label congratulation;
-    Gtk::Button afterGameQuit;
-    Gtk::Label afterGameUndertext;
+
 
 protected:
     bool onKeyPress(GdkEventKey *event);
     void changeToPage(Page p);
+
+    /**
+     * Ask a question to the user
+     * @param question the question
+     * @return the answer of the user
+     */
+    std::string ask(const std::string& question);
 
     bool update();
 };

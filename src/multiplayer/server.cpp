@@ -53,8 +53,14 @@ void Server::start()
 
 void Server::stop()
 {
+    // stop listening and accepting
     running = false;
 
+    // send a disconnect signal to every client
+    Disconnect d;
+    broadcastData(d);
+
+    // close all the sockets
     for (auto client : clients)
         close(client->client_socket);
 
@@ -103,7 +109,7 @@ void Server::receiveAllMsg()
 {
     while (running)
     {
-        for (auto client : clients)
+        for (auto client : clients) // FIXME might be causing a segfault
         {
             if (com::dataPresent(client->client_socket))
             {

@@ -36,16 +36,20 @@ private:
     int client_socket;
 
     /**
-     * Receive a message from a socket
-     * @param socket the socket
+     * Receive a message from a client_socket
      * @return a message was successfully received
      */
-    bool receiveMsg(int socket);
+    void receiveMsg();
 
     /**
      * The thread to receive message from clients
      */
     std::thread receiveMsgThread;
+
+    /**
+     * While the connection is on
+     */
+    bool running = true;
 
     /**
      * The game ref

@@ -152,7 +152,6 @@ int Game::checkForCompletedLines()
         // copy the line above
         for (int i = completeLine; i > 0; i--)
         {
-            matrix.Print();
             for (int j = 0; j < matrix.getNumColumns(); j++)
             {
                 matrix.To(i, j, matrix.At(i - 1,j));
@@ -176,7 +175,6 @@ int Game::checkForCompletedLines()
 
 void Game::tetrominoHasLanded()
 {
-    std::cout << "Tetromino has landed" << std::endl;
     // TODO change level
     auto numberOfCompletedLines = checkForCompletedLines();
 
@@ -216,8 +214,6 @@ void Game::gameLoop()
 
         if (!keyQueue.empty()) // only read access so no collision issues
         {
-            std::cout << "Should move" << std::endl;
-
             // If there is any move + collision check
             orient direction = getKeyPress();
 

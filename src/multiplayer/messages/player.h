@@ -16,7 +16,7 @@ public:
     explicit Player(int &socket);
     int& client_socket;
 
-    std::string name;
+    std::string name = "unknown";
 
     unsigned level;
     unsigned score;

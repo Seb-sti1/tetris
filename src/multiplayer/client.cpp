@@ -36,82 +36,80 @@ void Client::connectToServer(char ip[], char name[])
 
     com::sendMsg(client_socket, self);
 
-    receiveMsg(client_socket);
+    receiveMsgThread = std::thread(&Client::receiveMsg, this);
+    receiveMsgThread.detach();
 }
 
 Client::~Client() {
+    running = false;
     close(client_socket);
 }
 
-// TODO run in thread
-bool Client::receiveMsg(int socket)
+void Client::receiveMsg()
 {
-    while(!com::dataPresent(socket)) {}
-
-    std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
-    com::receiveData(socket, msg_size_as_char);
-
-    std::vector<char> msg_type_as_char(1);
-    com::receiveData(socket, msg_type_as_char);
-
-    int msg_size = atoi(msg_size_as_char.data());
-    auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
-
-    std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
-    com::receiveData(socket, buffer);
-
-    switch (msg_type)
+    while (running)
     {
-        case GAME_START: {
-            auto gs = GameStart();
-            gs.deserialize(buffer);
+        while (!com::dataPresent(client_socket)) {}
 
-            game.startGame(gs.seed);
-            return true;
-        }
-        case PLAYER_DATA: {
-            auto new_player = new Player(socket);
-            new_player->deserialize(buffer);
+        std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
+        com::receiveData(client_socket, msg_size_as_char);
 
-            bool found = false;
+        std::vector<char> msg_type_as_char(1);
+        com::receiveData(client_socket, msg_type_as_char);
 
-            for (auto client : clients)
-            {
-                if (client->name == new_player->name)
-                {
-                    std::cout << "Updating " << new_player->name << std::endl;
+        int msg_size = atoi(msg_size_as_char.data());
+        auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
 
-                    client->update(new_player);
+        std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
+        com::receiveData(client_socket, buffer);
 
-                    found = true;
-                    break;
+        switch (msg_type) {
+            case GAME_START: {
+                auto gs = GameStart();
+                gs.deserialize(buffer);
+
+                game.startGame(gs.seed);
+                break;
+            }
+            case PLAYER_DATA: {
+                auto new_player = new Player(client_socket);
+                new_player->deserialize(buffer);
+
+                bool found = false;
+
+                for (auto client: clients) {
+                    if (client->name == new_player->name) {
+                        std::cout << "Updating " << new_player->name << std::endl;
+
+                        client->update(new_player);
+
+                        found = true;
+                        break;
+                    }
                 }
+
+                if (!found && self.name != new_player->name) {
+                    std::cout << "New player " << new_player->name << std::endl;
+                    clients.push_back(new_player);
+                }
+
+                break;
             }
+            case DISCONNECT: {
+                Disconnect packet{};
+                packet.deserialize(buffer);
 
-            if (!found && self.name != new_player->name)
-            {
-                std::cout << "New player " << new_player->name << std::endl;
-                clients.push_back(new_player);
+                std::cout << "The server has stopped : " << packet.reason << std::endl;
+
+                // TODO show message & quit game
+
+                break;
             }
+            case GET_PLAYER_DATA:
+                self.update(game);
+                com::sendMsg(client_socket, self);
 
-            return true;
+                break;
         }
-        case DISCONNECT: {
-            Disconnect packet{};
-            packet.deserialize(buffer);
-
-            std::cout << "The server has stopped : " << packet.reason << std::endl;
-
-            // TODO show message & quit game
-
-            return true;
-        }
-        case GET_PLAYER_DATA:
-            self.update(game);
-            com::sendMsg(client_socket, self);
-
-            return true;
     }
-
-    return false;
 }
