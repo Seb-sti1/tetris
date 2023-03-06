@@ -5,6 +5,7 @@
 #ifndef TETRIS_MAINWINDOW_H
 #define TETRIS_MAINWINDOW_H
 
+#include <gtkmm.h>
 #include <gtkmm/window.h>
 #include <gtkmm/fixed.h>
 #include <gtkmm/buttonbox.h>
@@ -67,5 +68,6 @@ protected:
     bool update();
 };
 
+void popupError(const char* error); 
 
 #endif //TETRIS_MAINWINDOW_H

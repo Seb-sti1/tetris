@@ -34,9 +34,15 @@ MainWindow::MainWindow(Game& g) :
     b_join_multi.set_label("Rejoindre une partie multijoueur");
     b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
         // TODO get client & pseudo from pop up
-        client.connectToServer("127.0.0.1", "Moi");
 
-        changeToPage(MULTI);
+        try {
+            client.connectToServer("127.0.0.1", "Moi");
+            changeToPage(MULTI);
+        } catch (const std::system_error& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            popupError(e.what());
+        }
+        
         return true;
     });
     homeContainer.add(b_join_multi);
@@ -241,4 +247,13 @@ bool MainWindow::update()
             break;
     }
     return true;
+}
+
+void popupError(const char* error) 
+{
+    auto popup = Gtk::Application::create();
+
+    Gtk::MessageDialog dialog(error, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_CLOSE, true);
+    dialog.set_title("Erreur");
+    dialog.run();
 }

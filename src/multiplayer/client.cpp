@@ -18,7 +18,7 @@ void Client::connectToServer(char ip[], char name[])
 
     if (client_socket == -1) {
         std::cerr << "Failed to create socket" << std::endl;
-        // TODO exception
+        throw std::system_error(errno, std::system_category(), "Failed to create socket.");
     }
 
     sockaddr_in serverAddr{};
@@ -27,7 +27,7 @@ void Client::connectToServer(char ip[], char name[])
     serverAddr.sin_port = htons(2001);
     if (connect(client_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
         std::cerr << "Failed to connect to serverAddr" << std::endl;
-        // TODO exception
+        throw std::system_error(errno, std::system_category(), "Failed to connect to server.");
     }
 
     std::cout << "Connected to server" << std::endl;
