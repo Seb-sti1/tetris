@@ -4,6 +4,8 @@
 
 #include "player.h"
 
+#include <utility>
+
 struct player {
     unsigned level;
     unsigned score;
@@ -47,8 +49,8 @@ messageType Player::getType() {
     return PLAYER_DATA;
 }
 
-void Player::setName(char* n) {
-    name = n;
+void Player::setName(std::string n) {
+    name = std::move(n);
 }
 
 void Player::update(Game &g) {

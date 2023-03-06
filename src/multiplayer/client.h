@@ -16,7 +16,7 @@ class Client {
 public:
     explicit Client(Game& g);
 
-    void connectToServer(char ip[], char name[]);
+    void connectToServer(std::string ip, std::string name);
 
     ~Client();
 

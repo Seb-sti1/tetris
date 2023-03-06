@@ -36,11 +36,9 @@ MainWindow::MainWindow(Game& g) :
     b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
         isMulti = true;
 
-        std::string name = ask("Quel est votre pseudo ?");
-        std::string ip = ask("Quelle est l'ip du serveur ?");
-
         try {
-            client.connectToServer("127.0.0.1", "Moi");
+            client.connectToServer(ask("Quelle est l'ip du serveur ?"),
+                                   ask("Quel est votre pseudo ?"));
             changeToPage(MULTI);
         } catch (const std::system_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -285,7 +283,7 @@ bool MainWindow::update()
 
 std::string MainWindow::ask(const std::string& question)
 {
-    Gtk::Dialog dialog("question", true);
+    Gtk::Dialog dialog(question, true);
     dialog.set_default_size(200, 100);
 
     // add an entry in the popup window

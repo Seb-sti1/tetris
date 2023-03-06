@@ -6,13 +6,14 @@
 #include "messages/disconnect.h"
 #include "messages/gamestart.h"
 #include <iostream>
+#include <utility>
 #include <arpa/inet.h>
 #include <unistd.h>
 
 
 Client::Client(Game& g) : game(g), self(client_socket) {}
 
-void Client::connectToServer(char ip[], char name[])
+void Client::connectToServer(std::string ip, std::string name)
 {
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -22,7 +23,7 @@ void Client::connectToServer(char ip[], char name[])
     }
 
     sockaddr_in serverAddr{};
-    serverAddr.sin_addr.s_addr = inet_addr(ip);  // loopback address for testing on same machine
+    serverAddr.sin_addr.s_addr = inet_addr(ip.c_str());  // loopback address for testing on same machine
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(2001);
     if (connect(client_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
@@ -32,7 +33,7 @@ void Client::connectToServer(char ip[], char name[])
 
     std::cout << "Connected to server" << std::endl;
 
-    self.setName(name);
+    self.setName(std::move(name));
 
     com::sendMsg(client_socket, self);
 

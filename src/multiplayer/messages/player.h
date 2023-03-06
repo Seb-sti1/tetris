@@ -27,7 +27,7 @@ public:
     void deserialize(std::vector<char> data) override;
     messageType getType() override;
 
-    void setName(char *string);
+    void setName(std::string n);
 
     void update(Game& g);
     void update(Player* p);
