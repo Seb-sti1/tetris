@@ -39,10 +39,14 @@ MainWindow::MainWindow(Game& g) :
         std::string name = ask("Quel est votre pseudo ?");
         std::string ip = ask("Quelle est l'ip du serveur ?");
 
-        // TODO change signature to use std::string
-        client.connectToServer("127.0.0.1", "Moi");
+        try {
+            client.connectToServer("127.0.0.1", "Moi");
+            changeToPage(MULTI);
+        } catch (const std::system_error& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            popupError(e.what());
+        }
 
-        changeToPage(MULTI);
         return true;
     });
     homeContainer.add(b_join_multi);
@@ -294,4 +298,14 @@ std::string MainWindow::ask(const std::string& question)
     dialog.run();
 
     return entry.get_text();
+}
+
+
+void popupError(const char* error)
+{
+    auto popup = Gtk::Application::create();
+
+    Gtk::MessageDialog dialog(error, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_CLOSE, true);
+    dialog.set_title("Erreur");
+    dialog.run();
 }
