@@ -12,11 +12,6 @@ namespace com {
         std::vector<char> data;
         msg.toData(data);
 
-        return sendData(socket, data);
-    }
-
-    bool sendData(int socket, std::vector<char>& data)
-    {
         // Send a response to the client
         if (send(socket, data.data(), data.size(), 0) < 0) {
             std::cerr << "Error sending message to client\n";

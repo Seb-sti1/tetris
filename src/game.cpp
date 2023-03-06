@@ -55,7 +55,7 @@ void Game::startGame(long seed)
     drawTetromino(current_tetromino, true);
     lastFallDate = std::chrono::system_clock::now();
 
-    // start game loop
+    // startServer game loop
     gameLogicThread = std::thread(&Game::gameLoop, this);
     gameLogicThread.detach();
 }

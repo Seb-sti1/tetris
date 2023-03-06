@@ -19,11 +19,9 @@
 #include "graphicmatrix.h"
 #include "leaderboard.h"
 #include "../multiplayer/server.h"
-#include "../multiplayer/client.h"
 
 enum Page {HOME, GAME, AFTER_GAME, MULTI, MULTI_AFTER_GAME};
 
-// TODO create a graphic scoreboard
 // TODO add graphic scoreboard to game if isMulti
 
 class MainWindow : public Gtk::Window {
@@ -58,9 +56,7 @@ private:
     Gtk::Label infoText;
     Gtk::Button startGame;
     bool isMulti = false;
-    bool isServer = false;
     Server server;
-    Client client;
 
     // MULTI_AFTER_GAME page
     Gtk::Grid multiAfterGameGrid;

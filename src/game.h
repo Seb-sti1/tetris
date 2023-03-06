@@ -51,8 +51,8 @@ public:
     Game();
 
     /**
-     * start the game. Will generate the first piece and
-     * start the game loop
+     * startServer the game. Will generate the first piece and
+     * startServer the game loop
      * @param seed the seed of the random piece generator
      */
     void startGame(long seed);
@@ -69,7 +69,7 @@ public:
 
 private:
     /**
-     * Date of start of the game
+     * Date of startServer of the game
      */
     time_t start_date;
 

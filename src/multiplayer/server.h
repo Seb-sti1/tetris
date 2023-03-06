@@ -16,19 +16,23 @@ class Server {
 
 public:
     /**
-     * start a socket at 127.0.0.1:2001
+     * startServer a socket at 127.0.0.1:2001
      */
     explicit Server(Game& g);
 
-    /**
-     * start the server
-     */
-    void start();
+    void connectToServer(std::string ip, std::string name);
+
+    void disconnectFromServer();
 
     /**
-     * stop the server
+     * startServer the server
      */
-     void stop();
+    void startServer();
+
+    /**
+     * stopServer the server
+     */
+     void stopServer();
 
     /**
      * Close all sockets
@@ -36,7 +40,7 @@ public:
     ~Server();
 
     /**
-     * Send a game start packet
+     * Send a game startServer packet
      * @param seed
      */
     void startGame(long seed);
@@ -51,11 +55,16 @@ public:
      */
     Player self;
 
+    /**
+     * If the object is a server or a client
+     */
+    bool isServer = false;
+
 private:
     /**
-     * The server socket
+     * The server or client socket
      */
-    int server_socket;
+    int tetro_socket;
 
     /**
      * Wait until client tries to connect and accept the connection
@@ -63,14 +72,18 @@ private:
      */
     void acceptPlayer();
 
-
     /**
      * Try to read a message on every sockets
      */
     void receiveAllMsg();
 
     /**
-     * Broadcasts data to all client sockets except client_socket
+     * Read messages from a server
+     */
+    void receiveMsg();
+
+    /**
+     * Broadcasts data to all client sockets except tetro_socket
      * @param message
      * @param client_socket
      * @return
