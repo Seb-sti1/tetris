@@ -5,7 +5,9 @@
 #include "leaderboard.h"
 
 
-Leaderboard::Leaderboard(std::vector<Player *>& players, int width, int height) : players(players)
+Leaderboard::Leaderboard(int width, int height,
+                         std::vector<Player *> &players,
+                         Player &self) : players(players), self(self)
 {
     set_size_request(width, height);
 
@@ -21,10 +23,45 @@ Leaderboard::Leaderboard(std::vector<Player *>& players, int width, int height) 
 
     //Add the Model's column to the View's columns:
     m_TreeView.append_column("Pseudo", m_Columns.name);
+    m_TreeView.append_column("", m_Columns.status);
     m_TreeView.append_column("Score", m_Columns.score);
 
     show_all_children();
 }
+
+bool Leaderboard::addOrUpdateRow(const Player& p)
+{
+    if (strcmp(p.name.c_str(), "") != 0)
+    {
+
+        // try to update row
+        for (const auto & iter : m_refListStore->children())
+        {
+            Glib::ustring name = iter[m_Columns.name];
+
+            if (strcmp(name.c_str(), p.name.c_str()) == 0)
+            {
+                if (iter[m_Columns.score] != (int) p.score)
+                {
+                    iter[m_Columns.score] = (int) p.score;
+                    iter[m_Columns.status] = (p.alive) ? "" : "💀";
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // create new one if necessary
+        Gtk::TreeModel::Row row = *(m_refListStore->append());
+        row[m_Columns.name] = p.name.c_str();
+        row[m_Columns.score] = (int) p.score;
+        row[m_Columns.status] = (p.alive) ? "" : "💀";
+
+        return true;
+    }
+    return false;
+}
+
 
 bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
 {
@@ -33,34 +70,10 @@ bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
     // for every player, either update the existing row or add one
     for(auto player : players)
     {
-        bool found = false;
-        auto children = m_refListStore->children();
-
-        for (auto iter = children.begin(); iter != children.end(); ++iter)
-        {
-            Glib::ustring name = (*iter)[m_Columns.name];
-
-            if (strcmp(name.c_str(), player->name.c_str()) == 0)
-            {
-                if ((*iter)[m_Columns.score] != (int) player->score)
-                {
-                    (*iter)[m_Columns.score] = (int) player->score;
-                    changed = true;
-                }
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            changed = true;
-
-            Gtk::TreeModel::Row row = *(m_refListStore->append());
-            row[m_Columns.name] = (player->name + ((player->alive) ? "" : "💀")).c_str();
-            row[m_Columns.score] = (int) player->score;
-        }
+        changed = changed || addOrUpdateRow(*player);
     }
+
+    changed = changed || addOrUpdateRow(self);
 
     if (changed)
     {

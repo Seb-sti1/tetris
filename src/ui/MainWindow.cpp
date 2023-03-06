@@ -15,7 +15,7 @@ MainWindow::MainWindow(Game& g) :
         state(HOME),
         gameMatrix(game.matrix),
         previewMatrix(game.next_tetromino_matrix),
-        leaderboard(server.clients, 400, 300) // TODO the self player isn't displayed
+        leaderboard(400, 300, server.clients, server.self) // TODO the self player isn't displayed
 {
 
     /* ============================ CREATE HOME PAGE ====== */
@@ -55,7 +55,7 @@ MainWindow::MainWindow(Game& g) :
         isMulti = true;
 
         serverMultiplayerContainer.add(startGame); // TODO remove add the end
-        multiAfterGameGrid.add(multiAfterGameQuit); // TODO remove add the end
+        multiAfterGameGrid.attach(multiAfterGameQuit, 0, 3); // TODO remove add the end
 
         server.startServer();
 
@@ -123,9 +123,9 @@ MainWindow::MainWindow(Game& g) :
 
     paratext.set_text("Tu as fini ta partie. Cependant d'autres joueurs jouent encore."
                       "Le créateur de la partie pourra la terminer quand tout le monde aura fini !");
-    multiAfterGameGrid.add(paratext);
+    multiAfterGameGrid.attach(paratext, 0, 1);
 
-    multiAfterGameGrid.add(leaderboard);
+    multiAfterGameGrid.attach(leaderboard,  0, 2);
 
     multiAfterGameQuit.set_label("Lancer la partie");
     multiAfterGameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
@@ -251,25 +251,23 @@ bool MainWindow::update()
             queue_draw();
             break;
         case FINISH:
-            if (isMulti)
-            {
-                if (state != AFTER_GAME)
-                {
+            if (isMulti) {
+                if (state != MULTI_AFTER_GAME) {
+                    changeToPage(MULTI_AFTER_GAME);
+                }
+            } else {
+                if (state != AFTER_GAME) {
                     changeToPage(AFTER_GAME);
 
-                    std::string scores = "Tu as complété " + std::to_string(game.completed_lines) + " ligne(s), marqué " + std::to_string(game.score) + " point(s)\n et atteint le niveau " + std::to_string(game.level);
+                    std::string scores =
+                            "Tu as complété " + std::to_string(game.completed_lines) + " ligne(s), marqué " +
+                            std::to_string(game.score) + " point(s)\n et atteint le niveau " +
+                            std::to_string(game.level);
 
                     congratulation.set_margin_top(50);
                     congratulation.set_markup("<span size='large'><b>La partie est terminée !</b></span>\n\n\n"
                                               "<span size='large'>" + scores + ".</span>");
                     congratulation.set_alignment(Gtk::ALIGN_CENTER, Gtk::ALIGN_CENTER);
-                }
-            }
-            else
-            {
-                if (state != MULTI_AFTER_GAME)
-                {
-                    changeToPage(MULTI_AFTER_GAME);
                 }
             }
             break;
@@ -280,7 +278,7 @@ bool MainWindow::update()
 std::string MainWindow::ask(const std::string& question)
 {
     Gtk::Dialog dialog(question, true);
-    dialog.set_default_size(200, 100);
+    dialog.set_default_size(350, 75);
 
     // add an entry in the popup window
     Gtk::Entry entry;

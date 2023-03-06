@@ -16,7 +16,7 @@
 
 class Leaderboard : public Gtk::ScrolledWindow {
 public:
-    explicit Leaderboard(std::vector<Player*>& players, int width, int height);
+    explicit Leaderboard(int width, int height, std::vector<Player *> &players, Player &self);
 
     class ModelColumns : public Gtk::TreeModel::ColumnRecord
     {
@@ -25,10 +25,12 @@ public:
         ModelColumns()
         {
             add(name);
+            add(status);
             add(score);
         }
 
         Gtk::TreeModelColumn<Glib::ustring> name;
+        Gtk::TreeModelColumn<Glib::ustring> status;
         Gtk::TreeModelColumn<int> score;
     };
 
@@ -37,7 +39,11 @@ public:
 protected:
     Glib::RefPtr<Gtk::ListStore> m_refListStore; //The Tree Model.
     Gtk::TreeView m_TreeView; //The Tree View.
+
     std::vector<Player*>& players;
+    Player& self;
+
+    bool addOrUpdateRow(const Player& p);
 
     bool on_draw(const Cairo::RefPtr<::Cairo::Context> &cr) override;
 };
