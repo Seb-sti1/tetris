@@ -12,11 +12,10 @@ MainWindow::MainWindow(Game& g) :
         serverMultiplayerContainer(Gtk::ORIENTATION_VERTICAL),
         game(g),
         server(g),
-        client(g),
         state(HOME),
         gameMatrix(game.matrix),
         previewMatrix(game.next_tetromino_matrix),
-        leaderboard(server.clients, 400, 300)
+        leaderboard(server.clients, 400, 300) // TODO the self player isn't displayed
 {
 
     /* ============================ CREATE HOME PAGE ====== */
@@ -37,7 +36,7 @@ MainWindow::MainWindow(Game& g) :
         isMulti = true;
 
         try {
-            client.connectToServer(ask("Quelle est l'ip du serveur ?"),
+            server.connectToServer(ask("Quelle est l'ip du serveur ?"),
                                    ask("Quel est votre pseudo ?"));
             changeToPage(MULTI);
         } catch (const std::system_error& e) {
@@ -54,12 +53,11 @@ MainWindow::MainWindow(Game& g) :
         server.self.name = ask("Quel est votre pseudo ?");
 
         isMulti = true;
-        isServer = true;
 
         serverMultiplayerContainer.add(startGame);
         multiAfterGameGrid.add(multiAfterGameQuit);
 
-        server.start();
+        server.startServer();
 
         changeToPage(MULTI);
         return true;
@@ -131,7 +129,7 @@ MainWindow::MainWindow(Game& g) :
 
     multiAfterGameQuit.set_label("Lancer la partie");
     multiAfterGameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
-        server.stop();
+        server.stopServer();
 
         serverMultiplayerContainer.remove(startGame); //TODO verify those removals
         multiAfterGameGrid.remove(multiAfterGameQuit);
@@ -218,9 +216,9 @@ bool MainWindow::update()
         case WAITING:
             if (state == MULTI)
             {
-                std::vector<Player*> players = (isServer) ? server.clients : client.clients;
+                std::vector<Player*> players = server.clients;
 
-                std::string baseText = (isServer) ? "Le serveur multijoueur est ouvert !\n" : "Vous êtes connecté à une partie multijoueur !\n";
+                std::string baseText = (server.isServer) ? "Le serveur multijoueur est ouvert !\n" : "Vous êtes connecté à une partie multijoueur !\n";
 
                 if (!players.empty())
                 {
@@ -231,9 +229,7 @@ bool MainWindow::update()
                         baseText += player->name + ", ";
                     }
 
-                    baseText += (isServer) ? server.self.name : client.self.name;
-
-                    baseText += "(Vous).";
+                    baseText += server.self.name + "(Vous).";
                 }
                 else
                 {

@@ -13,13 +13,6 @@ namespace com {
     bool sendMsg(int socket, Messageable& msg);
 
     /**
-     * @deprecated use sendMsg instead
-     *
-     * TODO stop using it
-     */
-    bool sendData(int socket, std::vector<char>& data);
-
-    /**
      * @param socket the socket
      * @return If there is data to read
      */

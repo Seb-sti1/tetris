@@ -22,7 +22,6 @@ add_executable(tetris src/main.cpp
         src/matrix.h src/game.h src/game.cpp
 
         src/multiplayer/server.cpp src/multiplayer/server.h
-        src/multiplayer/client.cpp src/multiplayer/client.h
         src/multiplayer/communicator.cpp src/multiplayer/communicator.h
 
         src/multiplayer/messages/player.cpp src/multiplayer/messages/player.h
