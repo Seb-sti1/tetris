@@ -56,8 +56,8 @@ MainWindow::MainWindow(Game& g) :
         isMulti = true;
         isServer = true;
 
-        serverMultiplayerContainer.add(startGame); // TODO remove add the end
-        multiAfterGameGrid.add(multiAfterGameQuit); // TODO remove add the end
+        serverMultiplayerContainer.add(startGame);
+        multiAfterGameGrid.add(multiAfterGameQuit);
 
         server.start();
 
@@ -133,7 +133,8 @@ MainWindow::MainWindow(Game& g) :
     multiAfterGameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
         server.stop();
 
-
+        serverMultiplayerContainer.remove(startGame); //TODO verify those removals
+        multiAfterGameGrid.remove(multiAfterGameQuit);
 
         return true;
     });
