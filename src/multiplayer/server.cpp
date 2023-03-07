@@ -6,6 +6,7 @@
 #include "messages/messageable.h"
 #include "messages/disconnect.h"
 #include "messages/gamestart.h"
+#include "../ui/MainWindow.h"
 #include <iostream>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -41,7 +42,12 @@ void Server::connectToServer(std::string ip, std::string name)
 
     self.setName(std::move(name));
 
-    com::sendMsg(tetro_socket, self);
+    try {
+		com::sendMsg(tetro_socket, self);
+	} catch (const std::system_error& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		popupError(e.what()); //TODO Maybe no popup for that error ?
+	}
 
     receiveMsgThread = std::thread(&Server::receiveMsg, this);
     receiveMsgThread.detach();
@@ -55,22 +61,22 @@ void Server::startServer()
     sockaddr_in server_address{};
 
     if ((tetro_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        std::cerr << "Error creating socket\n";
-        // TODO exception
+        std::cerr << "Failed to create socket." << std::endl;
+        throw std::system_error(errno, std::system_category(), "Failed to create socket.");
     }
 
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = INADDR_ANY;
     server_address.sin_port = htons(2001);
     if (bind(tetro_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
-        std::cerr << "Error binding socket\n";
-        // TODO exception
+        std::cerr << "Failed to bind socket." << std::endl;
+		throw std::system_error(errno, std::system_category(), "Failed to bind socket.");
     }
 
     // Listen for incoming connections
     if (listen(tetro_socket, 3) < 0) {
-        std::cerr << "Error listening for connections\n";
-        // TODO exception
+        std::cerr << "Listening for connections failed." << std::endl;
+		throw std::system_error(errno, std::system_category(), "Listening for connections failed.");
     }
 
     std::cout << "Server listening on port 2001...\n";
@@ -134,13 +140,22 @@ void Server::acceptPlayer() {
             auto p = new Player(client_socket);
 
             clients.push_back(p);
-
-            com::sendMsg(p->client_socket, self);
+			try {
+				com::sendMsg(p->client_socket, self);
+			} catch (const std::system_error& e) {
+				std::cerr << "Error: " << e.what() << std::endl;
+				popupError(e.what()); //TODO validate popup use
+			}
         } else {
             std::cout << "New client tried to connect but the game is already started!\n";
 
             Disconnect packet("La partie a déjà commencé !");
-            com::sendMsg(client_socket, packet);
+            try {
+				com::sendMsg(client_socket, packet);
+			} catch (const std::system_error& e) {
+				std::cerr << "Error: " << e.what() << std::endl;
+				popupError(e.what()); //Maybe no popup for that error ? //TODO validate popup use
+			}
         }
     }
 }
@@ -245,7 +260,12 @@ void Server::receiveMsg()
             }
             case GET_PLAYER_DATA:
                 self.update(game);
-                com::sendMsg(tetro_socket, self);
+                try {
+					com::sendMsg(tetro_socket, self);
+				} catch (const std::system_error& e) {
+					std::cerr << "Error: " << e.what() << std::endl;
+					popupError(e.what()); //TODO Maybe no popup for that error ?
+				}
 
                 break;
         }
@@ -255,17 +275,29 @@ void Server::receiveMsg()
 
 bool Server::broadcastData(Messageable& msg, int client_socket)
 {
-    bool result = true;
-
     // Send message to every client except tetro_socket if given as an argument
+	/** part of previous version in case the new one doesn't work
+	bool result = true;
+
     for (auto client : clients)
     {
         if (client_socket != client->client_socket) {
             result = result and com::sendMsg(client->client_socket, msg);
         }
     }
-
-    return result;
+**/
+	for (auto client : clients) {
+		try {
+			if (client_socket != client->client_socket) {
+				com::sendMsg(client->client_socket, msg);
+			}
+		} catch (const std::system_error &e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+			popupError(e.what());
+			return false;
+		}
+	}
+    return true;
 }
 
 void Server::startGame(long seed) {
