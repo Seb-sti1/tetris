@@ -5,11 +5,8 @@
 #include "leaderboard.h"
 
 
-Leaderboard::Leaderboard(int width, int height,
-                         std::vector<Player *> &players,
-                         Player &self) : players(players), self(self)
+Leaderboard::Leaderboard(std::vector<Player *> &players, Player &self) : players(players), self(self)
 {
-    set_size_request(width, height);
 
     // Create a new scrolled window, with scrollbars only if needed
     set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
@@ -41,7 +38,7 @@ bool Leaderboard::addOrUpdateRow(const Player& p)
 
             if (strcmp(name.c_str(), p.name.c_str()) == 0)
             {
-                if (iter[m_Columns.score] != (int) p.score)
+                if (iter[m_Columns.score] != (int) p.score || iter[m_Columns.status] != ((p.alive) ? "" : "💀"))
                 {
                     iter[m_Columns.score] = (int) p.score;
                     iter[m_Columns.status] = (p.alive) ? "" : "💀";
@@ -76,7 +73,8 @@ bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
     changed = changed || addOrUpdateRow(self);
 
     if (changed)
-    {
+    {// FIXME not sorting
+        std::cout << "sorting" << std::endl;
         m_TreeView.get_column(1)->set_sort_column(m_Columns.score);
         m_TreeView.get_column(1)->set_sort_order(Gtk::SORT_DESCENDING);
     }

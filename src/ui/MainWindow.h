@@ -22,8 +22,6 @@
 
 enum Page {HOME, GAME, AFTER_GAME, MULTI, MULTI_AFTER_GAME};
 
-// TODO add graphic scoreboard to game if isMulti
-
 class MainWindow : public Gtk::Window {
 
 public:
@@ -63,8 +61,6 @@ private:
     Leaderboard leaderboard;
     Gtk::Label paratext;
     Gtk::Button multiAfterGameQuit;
-
-
 
 protected:
     bool onKeyPress(GdkEventKey *event);

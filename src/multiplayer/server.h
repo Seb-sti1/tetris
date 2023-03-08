@@ -60,6 +60,10 @@ public:
      */
     bool isServer = false;
 
+/**
+ * If the server should continue accepting new client or receiving new message
+ */
+bool running = false;
 private:
     /**
      * The server or client socket
@@ -91,6 +95,11 @@ private:
     bool broadcastData(Messageable& message, int client_socket = -1);
 
     /**
+     * actualize player list
+     */
+    void actualizePlayers();
+
+    /**
      * The thread to accept players continuously
      */
     std::thread acceptNewPlayerThread;
@@ -99,11 +108,6 @@ private:
      * The thread to receive message from clients
      */
     std::thread receiveMsgThread;
-
-    /**
-     * If the server should continue accepting new client or receiving new message
-     */
-    bool running;
 
     /**
      * The game ref

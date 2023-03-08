@@ -10,7 +10,14 @@
 #include "messages/messageable.h"
 
 namespace com {
-    bool sendMsg(int socket, Messageable& msg);
+
+    /**
+     * Send data to a socket
+     * @param socket the socket
+     * @param msg the buffer
+     * @return if it was sent
+     */
+    void sendMsg(int socket, Messageable& msg) noexcept(false);
 
     /**
      * @param socket the socket
@@ -18,7 +25,12 @@ namespace com {
      */
     bool dataPresent(int socket);
 
-    bool receiveData(int socket, std::vector<char>& buffer);
+    /**
+     * Read data from a socket
+     * @param socket the socket to read from to
+     * @param buffer the data buffer
+     */
+    void receiveData(int socket, std::vector<char>& buffer) noexcept(false);
 }
 
 

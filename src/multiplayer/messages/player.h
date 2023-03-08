@@ -13,8 +13,8 @@
 class Player : public Messageable {
 
 public:
-    explicit Player(int &socket);
-    int& client_socket;
+    explicit Player(int socket);
+    int client_socket;
 
     std::string name = "unknown";
 

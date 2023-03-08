@@ -10,15 +10,15 @@
 #include <gtkmm.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/treemodelcolumn.h>
-#include <gtkmm/treemodel.h>
+#include <gtkmm/treemodelsort.h>
 #include <gtkmm/liststore.h>
 #include "../multiplayer/messages/player.h"
 
 class Leaderboard : public Gtk::ScrolledWindow {
 public:
-    explicit Leaderboard(int width, int height, std::vector<Player *> &players, Player &self);
+    Leaderboard(std::vector<Player *> &players, Player &self);
 
-    class ModelColumns : public Gtk::TreeModel::ColumnRecord
+    class ModelColumns : public Gtk::TreeModelSort::ColumnRecord
     {
     public:
 

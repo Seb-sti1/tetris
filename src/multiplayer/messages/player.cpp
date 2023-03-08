@@ -15,7 +15,7 @@ struct player {
 };
 
 
-Player::Player(int &socket) : client_socket(socket),
+Player::Player(int socket) : client_socket(socket),
                               level(0), score(0), completed_lines(0), alive(true) {}
 
 void Player::serialize(std::vector<char> &data)
@@ -57,7 +57,7 @@ void Player::update(Game &g) {
     level = g.level;
     score = g.score;
     completed_lines = g.completed_lines;
-    alive = g.state == IN_GAME;
+    alive = g.state != FINISH;
 
 }
 

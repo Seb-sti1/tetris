@@ -10,7 +10,7 @@
 #include <queue>
 #include <mutex>
 
-enum GameState {WAITING, IN_GAME, DEAD, FINISH};
+enum GameState {WAITING, IN_GAME, FINISH};
 
 class Game {
 
@@ -68,12 +68,6 @@ public:
     void registerKeyPress(orient direction);
 
 private:
-    /**
-     * Date of startServer of the game
-     */
-    time_t start_date;
-
-
 
 
     /**

@@ -39,7 +39,6 @@ void Game::startGame(long seed)
     state = IN_GAME;
 
     gen = std::mt19937(seed);
-    start_date = std::time(nullptr);
 
     // generate the first two tetrominos
     current_tetromino = generateTetromino();
@@ -203,7 +202,6 @@ void Game::tetrominoHasLanded()
         // that will change to the after game screen
         state = FINISH;
     }
-
 }
 
 void Game::gameLoop()

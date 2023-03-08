@@ -15,7 +15,7 @@ MainWindow::MainWindow(Game& g) :
         state(HOME),
         gameMatrix(game.matrix),
         previewMatrix(game.next_tetromino_matrix),
-        leaderboard(400, 300, server.clients, server.self) // TODO the self player isn't displayed
+        leaderboard(server.clients, server.self)
 {
 
     /* ============================ CREATE HOME PAGE ====== */
@@ -37,7 +37,9 @@ MainWindow::MainWindow(Game& g) :
         try {
             server.connectToServer(ask("Quelle est l'ip du serveur ?"),
                                    ask("Quel est votre pseudo ?"));
+
 			isMulti = true;
+
             changeToPage(MULTI);
         } catch (const std::system_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -50,15 +52,15 @@ MainWindow::MainWindow(Game& g) :
 
     b_create_multi.set_label("Créer une partie multijoueur");
     b_create_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        server.self.name = ask("Quel est votre pseudo ?");
-
-        isMulti = true;
-
-        serverMultiplayerContainer.add(startGame); // TODO remove add the end
-        multiAfterGameGrid.attach(multiAfterGameQuit, 0, 3); // TODO remove add the end
-
+        server.self.setName(ask("Quel est votre pseudo ?"));
         try {
 			server.startServer();
+
+            isMulti = true;
+
+            serverMultiplayerContainer.add(startGame);
+            multiAfterGameGrid.attach(multiAfterGameQuit, 0, 3);
+
 			changeToPage(MULTI);
 		} catch (const std::system_error& e) {
 			std::cerr << "Error: " << e.what() << std::endl;
@@ -126,19 +128,20 @@ MainWindow::MainWindow(Game& g) :
 
     /* ======================= MULTIPLAYER AFTER GAME PAGE =================== */
 
-    paratext.set_text("Tu as fini ta partie. Cependant d'autres joueurs jouent encore."
-                      "Le créateur de la partie pourra la terminer quand tout le monde aura fini !");
+    paratext.set_markup("<span size='large'><b>Tu as fini ta partie.</b></span>"
+                        "\n<span size='large'>Cependant d'autres joueurs jouent encore.</span>\n\n"
+                      "<span size='large'>Le créateur de la partie pourra la terminer\nquand tout le monde aura fini !</span>");
+    paratext.set_margin_bottom(50);
     multiAfterGameGrid.attach(paratext, 0, 1);
 
     multiAfterGameGrid.attach(leaderboard,  0, 2);
 
-    multiAfterGameQuit.set_label("Lancer la partie");
+    multiAfterGameQuit.set_label("Terminer la partie multijoueur");
     multiAfterGameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
         server.stopServer();
 
-        serverMultiplayerContainer.remove(startGame); //TODO verify those removals
+        serverMultiplayerContainer.remove(startGame);
         multiAfterGameGrid.remove(multiAfterGameQuit);
-
         return true;
     });
 
@@ -164,6 +167,14 @@ void MainWindow::changeToPage(Page p)
             add(homeContainer);
             break;
         case GAME:
+            if (isMulti) {
+                // change the quit but button for the leaderboard
+                multiAfterGameGrid.remove(leaderboard);
+                playingGrid.remove(gameQuit);
+                leaderboard.set_size_request(220, 150);
+                playingGrid.attach(leaderboard, 1, 2);
+            }
+
             add(playingGrid);
             break;
         case AFTER_GAME:
@@ -173,6 +184,14 @@ void MainWindow::changeToPage(Page p)
             add(serverMultiplayerContainer);
             break;
         case MULTI_AFTER_GAME:
+            if (isMulti) {
+                playingGrid.remove(leaderboard);
+                playingGrid.attach(gameQuit, 1, 2);
+
+                leaderboard.set_size_request(400, 300);
+                multiAfterGameGrid.attach(leaderboard,  0, 2);
+            }
+
             add(multiAfterGameGrid);
             break;
     }
@@ -260,6 +279,10 @@ bool MainWindow::update()
             if (isMulti) {
                 if (state != MULTI_AFTER_GAME) {
                     changeToPage(MULTI_AFTER_GAME);
+                } else if (!server.running) {
+                    isMulti = false;
+                    game.stopGame();
+                    changeToPage(HOME);
                 }
             } else {
                 if (state != AFTER_GAME) {
