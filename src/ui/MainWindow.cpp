@@ -32,12 +32,12 @@ MainWindow::MainWindow(Game& g) :
     homeContainer.add(b_start);
 
     b_join_multi.set_label("Rejoindre une partie multijoueur");
-    b_join_multi.signal_button_release_event().connect([&](GdkEventButton*) {
-        isMulti = true;
-
+    b_join_multi.signal_button_release_event().connect([&](GdkEventButton*)
+	{
         try {
             server.connectToServer(ask("Quelle est l'ip du serveur ?"),
                                    ask("Quel est votre pseudo ?"));
+			isMulti = true;
             changeToPage(MULTI);
         } catch (const std::system_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -57,9 +57,14 @@ MainWindow::MainWindow(Game& g) :
         serverMultiplayerContainer.add(startGame); // TODO remove add the end
         multiAfterGameGrid.attach(multiAfterGameQuit, 0, 3); // TODO remove add the end
 
-        server.startServer();
+        try {
+			server.startServer();
+			changeToPage(MULTI);
+		} catch (const std::system_error& e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+			popupError(e.what());
+		}
 
-        changeToPage(MULTI);
         return true;
     });
     homeContainer.add(b_create_multi);
@@ -131,7 +136,8 @@ MainWindow::MainWindow(Game& g) :
     multiAfterGameQuit.signal_button_release_event().connect([&](GdkEventButton*) {
         server.stopServer();
 
-
+        serverMultiplayerContainer.remove(startGame); //TODO verify those removals
+        multiAfterGameGrid.remove(multiAfterGameQuit);
 
         return true;
     });
