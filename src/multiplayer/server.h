@@ -20,8 +20,16 @@ public:
      */
     explicit Server(Game& g);
 
+    /**
+     * Connect to the server
+     * @param ip the ip
+     * @param name the name of the player
+     */
     void connectToServer(std::string ip, std::string name);
 
+    /**
+     * Disconnect from the server
+     */
     void disconnectFromServer();
 
     /**
@@ -71,15 +79,9 @@ private:
     int tetro_socket;
 
     /**
-     * Wait until client tries to connect and accept the connection
-     * @return the client socket
+     * accept new client and read a message on every existing (alive) clients
      */
-    void acceptPlayer();
-
-    /**
-     * Try to read a message on every sockets
-     */
-    void receiveAllMsg();
+    void acceptClientAndReceiveAllMsg();
 
     /**
      * Read messages from a server
@@ -100,14 +102,9 @@ private:
     void actualizePlayers();
 
     /**
-     * The thread to accept players continuously
+     * The thread to receive message and on server side accept clients
      */
-    std::thread acceptNewPlayerThread;
-
-    /**
-     * The thread to receive message from clients
-     */
-    std::thread receiveMsgThread;
+    std::thread serverThread;
 
     /**
      * The game ref

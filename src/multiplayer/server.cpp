@@ -11,10 +11,9 @@
 #include <iostream>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define time_threshold 4
-
-// TODO detect when a client disconnect (currently makes app crash) maybe with https://stackoverflow.com/questions/12402549/check-if-socket-is-connected-or-not
 
 Server::Server(Game& g) : game(g), self(tetro_socket) {}
 
@@ -49,8 +48,8 @@ void Server::connectToServer(std::string ip, std::string name)
         std::cerr << "Error: " << e.what() << std::endl;
     }
 
-    receiveMsgThread = std::thread(&Server::receiveMsg, this);
-    receiveMsgThread.detach();
+    serverThread = std::thread(&Server::receiveMsg, this);
+    serverThread.detach();
 }
 
 void Server::startServer()
@@ -63,6 +62,13 @@ void Server::startServer()
     if ((tetro_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         std::cerr << "Failed to create socket." << std::endl;
         throw std::system_error(errno, std::system_category(), "Failed to create socket.");
+    }
+
+    int status = fcntl(tetro_socket, F_SETFL, fcntl(tetro_socket, F_GETFL, 0) | O_NONBLOCK);
+
+    if (status == -1){
+        std::cerr << "Failed to make socket non blocking." << std::endl;
+        throw std::system_error(errno, std::system_category(), "Failed to make socket non blocking.");
     }
 
     server_address.sin_family = AF_INET;
@@ -81,17 +87,15 @@ void Server::startServer()
 
     std::cout << "Server listening on port 2001...\n";
 
-    acceptNewPlayerThread = std::thread(&Server::acceptPlayer, this);
-    acceptNewPlayerThread.detach();
-
-    receiveMsgThread = std::thread(&Server::receiveAllMsg, this);
-    receiveMsgThread.detach();
+    serverThread = std::thread(&Server::acceptClientAndReceiveAllMsg, this);
+    serverThread.detach();
 }
 
 void Server::disconnectFromServer()
 {
     running = false;
     close(tetro_socket);
+    clients.clear();
 }
 
 void Server::stopServer()
@@ -108,6 +112,7 @@ void Server::stopServer()
         close(client->client_socket);
 
     close(tetro_socket); // FIXME doesn't unbind...
+    clients.clear();
 }
 
 Server::~Server() {
@@ -121,17 +126,19 @@ Server::~Server() {
     }
 }
 
-void Server::acceptPlayer() {
+void Server::acceptClientAndReceiveAllMsg()
+{
+    long date = std::time(nullptr);
+
     while (running)
     {
+        // ================================= Check for new connexion
         int client_socket;
         sockaddr_in client_address{};
 
         // Accept incoming connections
         socklen_t client_address_size = sizeof(client_address);
-        if ((client_socket = accept(tetro_socket, (struct sockaddr *) &client_address, &client_address_size)) < 0) {
-            std::cerr << "Error accepting connection\n" << std::endl;
-        } else {
+        if ((client_socket = accept(tetro_socket, (struct sockaddr *) &client_address, &client_address_size)) >= 0) {
             if (game.state == WAITING) {
                 std::cout << "New client connected!\n";
 
@@ -155,56 +162,48 @@ void Server::acceptPlayer() {
                 }
             }
         }
-    }
-}
 
-void Server::receiveAllMsg()
-{
-    long date = std::time(nullptr);
-
-    while (running)
-    {
-        try {
-            for (auto client : clients)
+        // ================================= Check for new messages
+        for (auto client : clients)
+        {
+            // read the data if the player lives and there is data
+            if (client->alive && com::dataPresent(client->client_socket))
             {
-                // read the data if the player lives and there is data
-                if (client->alive && com::dataPresent(client->client_socket))
-                {
-                    try {
-                        std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
-                        com::receiveData(client->client_socket, msg_size_as_char);
+                try {
+                    std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
+                    com::receiveData(client->client_socket, msg_size_as_char);
 
-                        std::vector<char> msg_type_as_char(1);
-                        com::receiveData(client->client_socket, msg_type_as_char);
+                    std::vector<char> msg_type_as_char(1);
+                    com::receiveData(client->client_socket, msg_type_as_char);
 
-                        int msg_size = atoi(msg_size_as_char.data());
-                        auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
+                    int msg_size = atoi(msg_size_as_char.data());
+                    auto msg_type = static_cast<messageType>((int) msg_type_as_char.at(0));
 
-                        std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
-                        com::receiveData(client->client_socket, buffer);
+                    std::vector<char> buffer(msg_size - SIZE_OF_MESSAGE_SIZE - 1);
+                    com::receiveData(client->client_socket, buffer);
 
-                        if (msg_type == PLAYER_DATA)
-                        {
-                            client->deserialize(buffer);
+                    if (msg_type == PLAYER_DATA)
+                    {
+                        client->deserialize(buffer);
 
-                            std::cout << client->name << " send new information" << std::endl;
+                        std::cout << client->name << " send new information" << std::endl;
 
-                            broadcastData(*client, client->client_socket);
-                        }
-                        else
-                        {
-                            std::cout << client->name << " send a packet not useful for the server" << std::endl;
-                        }
-                    } catch (const std::system_error& e) { // FIXME deals with Error: Can't receive data.: Connexion ré-initialisée par le correspondant
-                        std::cerr << "Error: " << e.what() << std::endl;
+                        broadcastData(*client, client->client_socket);
                     }
+                    else
+                    {
+                        std::cout << client->name << " send a packet not useful for the server" << std::endl;
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Error: " << e.what() << std::endl;
+                    client->alive = false;
+
+                    close(client->client_socket);
                 }
             }
-        } catch (std::exception& e) {
-            // FIXME deal with concurrency
-            std::cerr << "Error: " << e.what() << std::endl;
         }
 
+        // ================================= Updates players
         long now = std::time(nullptr);
         if (now - date > time_threshold && running)
         {
@@ -292,8 +291,10 @@ void Server::receiveMsg()
                     }
                     break;
             }
-        } catch (const std::system_error& e) { // FIXME deals with Error: Can't receive data.: Connexion ré-initialisée par le correspondant
+        } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
+            std::cout << "Can't communicate with server !" << std::endl;
+            disconnectFromServer();
         }
     }
 }
@@ -304,7 +305,7 @@ bool Server::broadcastData(Messageable& msg, int client_socket)
     // Send message to every client except tetro_socket if given as an argument
     for (auto client : clients) {
         try {
-            if (client_socket != client->client_socket) {
+            if (client->alive && client_socket != client->client_socket) {
                 com::sendMsg(client->client_socket, msg);
             }
         } catch (const std::system_error &e) {
