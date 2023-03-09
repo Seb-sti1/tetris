@@ -12,16 +12,11 @@ Game::Game() :
         completed_lines(0),
         current_tetromino(NONE),
         next_tetromino(NONE),
-        next_tetromino_matrix(TETROMINO_ROWS, TETROMINO_COLS)
+        next_tetromino_matrix(4, 4)
 {
     state = WAITING;
 
-    // TODO init matrix to a default value ?
-    for (int i = 0; i < matrix.getNumRows(); i++) {
-        for (int j = 0; j < matrix.getNumColumns(); j++) {
-            matrix.To(i, j, NONE);
-        }
-    }
+    matrix.resetToValue(NONE);
 }
 
 Tetromino Game::generateTetromino()
@@ -34,6 +29,21 @@ Tetromino Game::generateTetromino()
     return t;
 }
 
+
+void Game::updateNextTetrominoMatrix() {
+    auto collision = next_tetromino.get_collision_matrix();
+
+    next_tetromino_matrix.resetToValue(NONE);
+    for (int i = 0; i < collision.getNumRows(); i++) {
+        for (int j = 0; j < collision.getNumColumns(); j++) {
+            if (collision.At(i, j))
+                next_tetromino_matrix.To(i, j, next_tetromino.type);
+        }
+    }
+
+}
+
+
 void Game::startGame(long seed)
 {
     state = IN_GAME;
@@ -44,12 +54,7 @@ void Game::startGame(long seed)
     current_tetromino = generateTetromino();
     next_tetromino = generateTetromino();
 
-    auto collision = next_tetromino.get_collision_matrix();
-    for (int i = 0; i < collision.getNumRows(); i++) {
-        for (int j = 0; j < collision.getNumColumns(); j++) {
-            next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
-        }
-    }
+    updateNextTetrominoMatrix();
 
     drawTetromino(current_tetromino, true);
     lastFallDate = std::chrono::system_clock::now();
@@ -185,13 +190,7 @@ void Game::tetrominoHasLanded()
     if (current_tetromino.verify_move_validity(matrix))
     {// possible to spawn
         next_tetromino = generateTetromino();
-
-        auto collision = next_tetromino.get_collision_matrix();
-        for (int i = 0; i < collision.getNumRows(); i++) {
-            for (int j = 0; j < collision.getNumColumns(); j++) {
-                next_tetromino_matrix.To(i, j, (collision.At(i, j)) ? next_tetromino.type : NONE);
-            }
-        }
+        updateNextTetrominoMatrix();
 
         // draw current_tetromino
         drawTetromino(current_tetromino, true);

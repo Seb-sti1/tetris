@@ -27,9 +27,17 @@ public:
     Matrix<tetromino_type> matrix; // Matrix of the game 20*10
 
     /**
+     * The current tetromino controlled by the user
+     */
+    Tetromino current_tetromino;
+    /**
+     * The next tetromino (displayed in the corner of the frame)
+     */
+    Tetromino next_tetromino;
+    /**
      * The matrix of the next tetromino for preview
      */
-    Matrix<tetromino_type> next_tetromino_matrix;// TODO change this
+    Matrix<tetromino_type> next_tetromino_matrix;
 
 
     /**
@@ -68,20 +76,6 @@ public:
     void registerKeyPress(orient direction);
 
 private:
-
-
-    /**
-     * The current tetromino controlled by the user
-     */
-    Tetromino current_tetromino;
-    /**
-     * The next tetromino (displayed in the corner of the frame)
-     */
-    Tetromino next_tetromino;
-
-
-
-
     /**
      * The distribution to generate the pieces
      */
@@ -95,6 +89,10 @@ private:
      */
     Tetromino generateTetromino();
 
+    /**
+     * Update next_tetromino_matrix
+     */
+     void updateNextTetrominoMatrix();
 
 
 

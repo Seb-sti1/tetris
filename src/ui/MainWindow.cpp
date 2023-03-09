@@ -240,6 +240,12 @@ bool MainWindow::update()
         case WAITING:
             if (state == MULTI)
             {
+                if (!server.running)
+                {
+                    changeToPage(HOME);
+                    isMulti = false;
+                }
+
                 std::vector<Player*> players = server.clients;
 
                 std::string baseText = (server.isServer) ? "Le serveur multijoueur est ouvert !\n" : "Vous êtes connecté à une partie multijoueur !\n";
@@ -280,9 +286,9 @@ bool MainWindow::update()
                 if (state != MULTI_AFTER_GAME) {
                     changeToPage(MULTI_AFTER_GAME);
                 } else if (!server.running) {
+                    changeToPage(HOME);
                     isMulti = false;
                     game.stopGame();
-                    changeToPage(HOME);
                 }
             } else {
                 if (state != AFTER_GAME) {
