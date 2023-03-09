@@ -51,6 +51,15 @@ public:
         return &(this->data[row * (this->cols) + col]);
     }
 
+    void resetToValue(const T value)
+    {
+        for (int i = 0; i < getNumRows(); i++) {
+            for (int j = 0; j < getNumColumns(); j++) {
+                To(i, j, value);
+            }
+        }
+    }
+
     void To(const int row, const int col, const T value) {
         data[row * (this->cols) + col] = value;
     }
