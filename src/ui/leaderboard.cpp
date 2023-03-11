@@ -60,9 +60,9 @@ bool Leaderboard::addOrUpdateRow(const Player& p)
 }
 
 
-bool Leaderboard::removeChildren()
+void Leaderboard::removeChildren()
 {
-    m_refListStore.clear(); // FIXME create a segfault
+    m_refListStore->clear(); // FIXME create a segfault
 }
 
 bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
@@ -78,10 +78,9 @@ bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
     changed = changed || addOrUpdateRow(self);
 
     if (changed)
-    {// FIXME not sorting
+    {
         std::cout << "sorting" << std::endl;
-        m_TreeView.get_column(1)->set_sort_column(m_Columns.score);
-        m_TreeView.get_column(1)->set_sort_order(Gtk::SORT_DESCENDING);
+        m_refListStore->set_sort_column(m_Columns.score, Gtk::SORT_DESCENDING);
     }
 
     return Gtk::ScrolledWindow::on_draw(cr);

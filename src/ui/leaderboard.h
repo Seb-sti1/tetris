@@ -36,7 +36,7 @@ public:
 
     ModelColumns m_Columns;
 
-    bool removeChildren();
+    void removeChildren();
 
 protected:
     Glib::RefPtr<Gtk::ListStore> m_refListStore; //The Tree Model.
