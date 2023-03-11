@@ -64,6 +64,11 @@ private:
 
 protected:
     bool onKeyPress(GdkEventKey *event);
+
+    /**
+     * Make the app change page
+     * @param p the page to change to
+     */
     void changeToPage(Page p);
 
     /**
@@ -73,9 +78,18 @@ protected:
      */
     std::string ask(const std::string& question);
 
+    /**
+     * Routine that is called to update the screen
+     * @return true
+     */
     bool update();
 };
 
+/**
+ * Show a pop message
+ * @param message the message to show
+ * @param is_error if this is an error
+ */
 void popup(const char *message, bool is_error = false);
 
 #endif //TETRIS_MAINWINDOW_H

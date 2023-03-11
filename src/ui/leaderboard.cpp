@@ -38,10 +38,10 @@ bool Leaderboard::addOrUpdateRow(const Player& p)
 
             if (strcmp(name.c_str(), p.name.c_str()) == 0)
             {
-                if (iter[m_Columns.score] != (int) p.score || iter[m_Columns.status] != ((p.alive) ? "" : "💀"))
+                if (iter[m_Columns.score] != (int) p.score || iter[m_Columns.status] != ((p.alive && p.connected) ? "" : "💀"))
                 {
                     iter[m_Columns.score] = (int) p.score;
-                    iter[m_Columns.status] = (p.alive) ? "" : "💀";
+                    iter[m_Columns.status] = (p.alive && p.connected) ? "" : "💀";
                     return true;
                 }
                 return false;
@@ -52,7 +52,7 @@ bool Leaderboard::addOrUpdateRow(const Player& p)
         Gtk::TreeModel::Row row = *(m_refListStore->append());
         row[m_Columns.name] = p.name.c_str();
         row[m_Columns.score] = (int) p.score;
-        row[m_Columns.status] = (p.alive) ? "" : "💀";
+        row[m_Columns.status] = (p.alive && p.connected) ? "" : "💀";
 
         return true;
     }

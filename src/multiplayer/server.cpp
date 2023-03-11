@@ -22,6 +22,8 @@ void Server::connectToServer(std::string ip, std::string name)
     isServer = false;
     running = true;
 
+    self.update(game);
+
     tetro_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (tetro_socket == -1) {
@@ -56,6 +58,8 @@ void Server::startServer()
 {
     isServer = true;
     running = true;
+
+    self.update(game);
 
     sockaddr_in server_address{};
 
@@ -167,7 +171,7 @@ void Server::acceptClientAndReceiveAllMsg()
         for (auto client : clients)
         {
             // read the data if the player lives and there is data
-            if (client->alive && com::dataPresent(client->client_socket))
+            if (client->connected && com::dataPresent(client->client_socket) && running)
             {
                 try {
                     std::vector<char> msg_size_as_char(SIZE_OF_MESSAGE_SIZE);
@@ -196,7 +200,7 @@ void Server::acceptClientAndReceiveAllMsg()
                     }
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
-                    client->alive = false;
+                    client->connected = false;
 
                     close(client->client_socket);
                 }
@@ -305,7 +309,7 @@ bool Server::broadcastData(Messageable& msg, int client_socket)
     // Send message to every client except tetro_socket if given as an argument
     for (auto client : clients) {
         try {
-            if (client->alive && client_socket != client->client_socket) {
+            if (client->connected && client_socket != client->client_socket) {
                 com::sendMsg(client->client_socket, msg);
             }
         } catch (const std::system_error &e) {

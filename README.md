@@ -27,16 +27,22 @@ The pieces generated will be the same for all the players.
 * Retrieve the status of the game
 * The Server can send the random generator and startServer the game
 
-## How it works
-
-### Objects
-
-
 # Installation
 
-Install of GTK :
+You need at least cmake version 3.16
+
+Install GTK :
 - `sudo apt install libgtkmm-3.0-dev`
 
+# Build
+
+```bash
+mkdir build; cd build
+
+cmake ..
+make
+./tetris
+```
 
 # Useful links
 

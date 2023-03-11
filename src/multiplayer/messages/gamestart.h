@@ -15,6 +15,9 @@ public:
     explicit GameStart(long seed);
     GameStart() = default;
 
+    /**
+     * The random seed of the game
+     */
     long seed;
 
     void serialize(std::vector<char> &data) override;

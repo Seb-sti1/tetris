@@ -16,6 +16,10 @@
 
 class Leaderboard : public Gtk::ScrolledWindow {
 public:
+    /**
+     * @param players the list of connected players
+     * @param self the current player
+     */
     Leaderboard(std::vector<Player *> &players, Player &self);
 
     class ModelColumns : public Gtk::TreeModelSort::ColumnRecord
@@ -36,6 +40,9 @@ public:
 
     ModelColumns m_Columns;
 
+    /**
+     * Remove all players from the leaderboard
+     */
     void removeChildren();
 
 protected:
@@ -45,7 +52,13 @@ protected:
     std::vector<Player*>& players;
     Player& self;
 
+    /**
+     * Add or update a player in the leaderboard
+     * @param p the player to add or update
+     * @return if a modification was done
+     */
     bool addOrUpdateRow(const Player& p);
+
 
     bool on_draw(const Cairo::RefPtr<::Cairo::Context> &cr) override;
 

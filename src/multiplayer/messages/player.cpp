@@ -16,7 +16,7 @@ struct player {
 
 
 Player::Player(int socket) : client_socket(socket),
-                              level(0), score(0), completed_lines(0), alive(true) {}
+                              level(0), score(0), completed_lines(0), alive(true), connected(true) {}
 
 void Player::serialize(std::vector<char> &data)
 {

@@ -14,6 +14,9 @@ public:
     Disconnect(std::string reason);
     Disconnect() = default;
 
+    /**
+     * The reason of deconnection
+     */
     std::string reason;
 
     void serialize(std::vector<char> &data) override;
