@@ -158,7 +158,7 @@ void Server::acceptClientAndReceiveAllMsg()
                     com::sendMsg(client_socket, packet);
                 } catch (const std::system_error& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
-                    popupError(e.what());
+					popup(e.what(), true);
                 }
             }
         }
@@ -310,7 +310,7 @@ bool Server::broadcastData(Messageable& msg, int client_socket)
             }
         } catch (const std::system_error &e) {
             std::cerr << "Error: " << e.what() << std::endl;
-            popupError(e.what());
+			popup(e.what(), true);
             return false;
         }
     }

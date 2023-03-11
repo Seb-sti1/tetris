@@ -43,7 +43,7 @@ MainWindow::MainWindow(Game& g) :
             changeToPage(MULTI);
         } catch (const std::system_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
-            popupError(e.what());
+			popup(e.what(), true);
         }
 
         return true;
@@ -64,7 +64,7 @@ MainWindow::MainWindow(Game& g) :
 			changeToPage(MULTI);
 		} catch (const std::system_error& e) {
 			std::cerr << "Error: " << e.what() << std::endl;
-			popupError(e.what());
+			popup(e.what(), true);
 		}
 
         return true;
@@ -74,6 +74,12 @@ MainWindow::MainWindow(Game& g) :
     b_help.set_label("Aide");
     b_help.signal_button_release_event().connect([&](GdkEventButton*) {
         std::cout << "Help" << std::endl;
+		char help_msg[] = "Pour jouer à ce Tetris, les touches sont les suivantes :\n"
+						 "\n > Flèche droite pour déplacer le tetromino à droite"
+						 "\n > Flèche gauche pour déplacer le tetromino à gauche"
+						 "\n > Flèche du bas pour déplacer le tetromino vers le bas"
+						 "\n > Flèche du haut pour tourner le tetromino dans le sens trigo";
+		popup(help_msg);
         return true;
     });
     homeContainer.add(b_help);
@@ -328,11 +334,14 @@ std::string MainWindow::ask(const std::string& question)
 }
 
 
-void popupError(const char* error)
+void popup(const char *message, bool is_error)
 {
     auto popup = Gtk::Application::create();
+	Gtk::MessageType msg_type = is_error ? Gtk::MESSAGE_ERROR : Gtk::MESSAGE_INFO;
+	Gtk::MessageDialog dialog(message, false, msg_type, Gtk::BUTTONS_CLOSE, true);
+	if (is_error==true) {
+		dialog.set_title("Erreur");
+	}
 
-    Gtk::MessageDialog dialog(error, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_CLOSE, true);
-    dialog.set_title("Erreur");
     dialog.run();
 }

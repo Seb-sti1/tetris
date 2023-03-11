@@ -76,6 +76,6 @@ protected:
     bool update();
 };
 
-void popupError(const char* error); 
+void popup(const char *message, bool is_error = false);
 
 #endif //TETRIS_MAINWINDOW_H
