@@ -111,7 +111,7 @@ void Server::stopServer()
     for (auto client : clients)
         close(client->client_socket);
 
-    close(tetro_socket); // FIXME doesn't unbind...
+    close(tetro_socket);
     clients.clear();
 }
 

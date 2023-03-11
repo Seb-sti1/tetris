@@ -60,6 +60,11 @@ bool Leaderboard::addOrUpdateRow(const Player& p)
 }
 
 
+bool Leaderboard::removeChildren()
+{
+    m_refListStore.clear(); // FIXME create a segfault
+}
+
 bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
 {
     bool changed = false;

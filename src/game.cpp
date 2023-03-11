@@ -219,7 +219,6 @@ void Game::gameLoop()
 
             switch (direction) {
                 case UP:
-                    // TODO verify that the next line properly works (spoiler it doesn't and its behaviour has to be corriged)
                     new_current_tetromino.orientation = static_cast<orient>((new_current_tetromino.orientation + 1) % 7); // 7 tetromino types
                     break;
                 case RIGHT:

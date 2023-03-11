@@ -36,6 +36,8 @@ public:
 
     ModelColumns m_Columns;
 
+    bool removeChildren();
+
 protected:
     Glib::RefPtr<Gtk::ListStore> m_refListStore; //The Tree Model.
     Gtk::TreeView m_TreeView; //The Tree View.
@@ -46,6 +48,7 @@ protected:
     bool addOrUpdateRow(const Player& p);
 
     bool on_draw(const Cairo::RefPtr<::Cairo::Context> &cr) override;
+
 };
 
 

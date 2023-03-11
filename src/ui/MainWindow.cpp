@@ -294,6 +294,7 @@ bool MainWindow::update()
                 } else if (!server.running) {
                     changeToPage(HOME);
                     isMulti = false;
+                    leaderboard.removeChildren();
                     game.stopGame();
                 }
             } else {
