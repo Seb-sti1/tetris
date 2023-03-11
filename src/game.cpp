@@ -89,17 +89,11 @@ double Game::getPieceFallDelay() const
             return 0.133;
         case 9:
             return 0.1;
-        case 10:
-        case 11:
-        case 12:
+        case 10 ... 12:
             return 0.083;
-        case 13:
-        case 14:
-        case 15:
+        case 13 ... 15:
             return 0.0667;
-        case 16:
-        case 17:
-        case 18:
+        case 16 ... 18:
             return 0.05;
         default:
             if (level < 20)
@@ -179,11 +173,11 @@ int Game::checkForCompletedLines()
 
 void Game::tetrominoHasLanded()
 {
-    // TODO change level
     auto numberOfCompletedLines = checkForCompletedLines();
 
     completed_lines += numberOfCompletedLines;
     score += getScore(numberOfCompletedLines);
+	level = int(completed_lines/10);
 
     current_tetromino = next_tetromino;
 

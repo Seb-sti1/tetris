@@ -78,13 +78,14 @@ MainWindow::MainWindow(Game& g) :
 						 "\n > Flèche droite pour déplacer le tetromino à droite"
 						 "\n > Flèche gauche pour déplacer le tetromino à gauche"
 						 "\n > Flèche du bas pour déplacer le tetromino vers le bas"
-						 "\n > Flèche du haut pour tourner le tetromino dans le sens trigo";
+						 "\n > Flèche du haut pour tourner le tetromino dans le sens trigo"
+						 "\n\n Le niveau augmente toutes les 10 lignes validées.";
 		popup(help_msg);
         return true;
     });
     homeContainer.add(b_help);
 
-    homeUndertext.set_label("Tetris by Billy & Sébastien.");
+    homeUndertext.set_label("Tetris par Billy & Sébastien.");
     homeContainer.add(homeUndertext);
 
     /* ======================= CREATE GAME PAGE =================== */
@@ -93,7 +94,7 @@ MainWindow::MainWindow(Game& g) :
 
     playingGrid.attach(previewMatrix, 1, 0);
 
-    score.set_text("Your score is " + std::to_string(game.score));
+    score.set_text("Score : " + std::to_string(game.score) + "\nNiveau : " + std::to_string(game.level));
     playingGrid.attach(score, 1, 1);
 
     gameQuit.set_label("Quitter la partie");
@@ -283,7 +284,7 @@ bool MainWindow::update()
                 changeToPage(GAME);
             }
 
-            score.set_text("Ton score est " + std::to_string(game.score));
+			score.set_text("Score : " + std::to_string(game.score) + "\nNiveau : " + std::to_string(game.level));
 
             queue_draw();
             break;
