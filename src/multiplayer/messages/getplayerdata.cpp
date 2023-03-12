@@ -9,7 +9,7 @@ void GetPlayerData::serialize(std::vector<char> &data)
 {
     data.resize(SIZE_OF_MESSAGE_SIZE + 1);
 
-    // there no content, the message provide all the useful information
+    // there's no content, the message provide all the useful information
 }
 
 

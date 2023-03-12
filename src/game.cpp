@@ -25,6 +25,7 @@ Tetromino Game::generateTetromino()
                 0,0, UP);
 
     t.x = -t.getSpawningX();
+	t.y = 4;
 
     return t;
 }
@@ -200,72 +201,68 @@ void Game::tetrominoHasLanded()
 void Game::gameLoop()
 {
 
-    while (state == IN_GAME)
-    {
+    while (state == IN_GAME) {
 
-        if (!keyQueue.empty()) // only read access so no collision issues
-        {
-            // If there is any move + collision check
-            orient direction = getKeyPress();
+		if (!keyQueue.empty()) // only read access so no collision issues
+		{
+			// If there is any move + collision check
+			orient direction = getKeyPress();
 
-            // move the piece
-            auto new_current_tetromino(current_tetromino);
+			// move the piece
+			auto new_current_tetromino(current_tetromino);
 
-            switch (direction) {
-                case UP:
-                    new_current_tetromino.orientation = static_cast<orient>((new_current_tetromino.orientation + 1) % 7); // 7 tetromino types
-                    break;
-                case RIGHT:
-                    new_current_tetromino.y++;
-                    break;
-                case DOWN:
-                    new_current_tetromino.x++;
-                    break;
-                case LEFT:
-                    new_current_tetromino.y--;
-                    break;
-            }
+			switch (direction) {
+				case UP:
+					new_current_tetromino.orientation = static_cast<orient>((new_current_tetromino.orientation + 1) %
+																			7); // 7 tetromino types
+					break;
+				case RIGHT:
+					new_current_tetromino.y++;
+					break;
+				case DOWN:
+					new_current_tetromino.x++;
+					break;
+				case LEFT:
+					new_current_tetromino.y--;
+					break;
+			}
 
-            // undraw current_tetromino : necessary for the validity check
-            drawTetromino(current_tetromino, false);
+			// undraw current_tetromino : necessary for the validity check
+			drawTetromino(current_tetromino, false);
 
-            if (new_current_tetromino.verify_move_validity(matrix))
-            {
-                current_tetromino = new_current_tetromino;
-            }
+			if (new_current_tetromino.verify_move_validity(matrix)) {
+				current_tetromino = new_current_tetromino;
+			}
 
-            // draw the new (if valid) state or the old one otherwise
-            drawTetromino(current_tetromino, true);
-        }
+			// draw the new (if valid) state or the old one otherwise
+			drawTetromino(current_tetromino, true);
+		}
 
 
-        std::chrono::duration<double> durationSinceLastFall = std::chrono::system_clock::now() - lastFallDate;
-        if (durationSinceLastFall.count() > getPieceFallDelay()) {
-            lastFallDate = std::chrono::system_clock::now();
+		std::chrono::duration<double> durationSinceLastFall = std::chrono::system_clock::now() - lastFallDate;
+		if (durationSinceLastFall.count() > getPieceFallDelay()) {
+			lastFallDate = std::chrono::system_clock::now();
 
-            // move the piece downward
-            auto new_current_tetromino(current_tetromino);
-            new_current_tetromino.x++;
+			// move the piece downward
+			auto new_current_tetromino(current_tetromino);
+			new_current_tetromino.x++;
 
-            // undraw current_tetromino : necessary for the validity check
-            drawTetromino(current_tetromino, false);
+			// undraw current_tetromino : necessary for the validity check
+			drawTetromino(current_tetromino, false);
 
-            if (new_current_tetromino.verify_move_validity(matrix))
-            {
-                // change the tetromino
-                current_tetromino = new_current_tetromino;
-                // draw (new) current_tetromino
-                drawTetromino(current_tetromino, true);
-            }
-            else
-            {
-                // redraw current_tetromino (without moving it)
-                drawTetromino(current_tetromino, true);
-                // when the tetromino touch the ground
-                tetrominoHasLanded();
-            }
-        }
-    }
+			if (new_current_tetromino.verify_move_validity(matrix)) {
+				// change the tetromino
+				current_tetromino = new_current_tetromino;
+				// draw (new) current_tetromino
+				drawTetromino(current_tetromino, true);
+			} else {
+				// redraw current_tetromino (without moving it)
+				drawTetromino(current_tetromino, true);
+				// when the tetromino touch the ground
+				tetrominoHasLanded();
+			}
+		}
+	}
 }
 
 void Game::drawTetromino(const Tetromino& t, bool draw)
@@ -294,6 +291,9 @@ void Game::stopGame() {
             matrix.To(i, j, NONE);
         }
     }
+	level = 0;
+	score = 0;
+	completed_lines = 0;
 }
 
 void Game::registerKeyPress(orient direction) {

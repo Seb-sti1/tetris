@@ -67,6 +67,3 @@ void Player::update(Player *p) {
     completed_lines = p->completed_lines;
     alive = p->alive;
 }
-
-
-

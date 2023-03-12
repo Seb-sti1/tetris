@@ -79,7 +79,6 @@ bool Leaderboard::on_draw(const ::Cairo::RefPtr<::Cairo::Context> &cr)
 
     if (changed)
     {
-        std::cout << "sorting" << std::endl;
         m_refListStore->set_sort_column(m_Columns.score, Gtk::SORT_DESCENDING);
     }
 
